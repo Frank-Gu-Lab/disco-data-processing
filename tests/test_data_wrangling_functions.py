@@ -266,7 +266,7 @@ class TestPrep:
         input_mean = pd.read_excel(input_path + "/prep_mean_" + path + "_input.xlsx", index_col=0)
 
         actual = prep_mean(input_mean, path)
-        #print(actual.head())
+        #print(actual)
 
         # preserve multi-index when reading in Excel file
         if path == 'book':
@@ -281,13 +281,12 @@ class TestPrep:
             expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
             expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
 
-            #Forgets to check for the dofs column
-            #added dofs but that didnt fix it so gotta keep working on this one
-        #print(expected.head())
-        #Checking the print seems to yield the same dataframe for both, unsure why they are considered unequal
 
-        pd.testing.assert_frame_equal(actual.head(), expected.head(), check_dtype=False)
-        #Just comparing heads fixes two of the errors, will have to inspect further later
+        #print(expected)
+
+
+        #Breaks due to sample size mismatch in the last row
+        pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
 
     @pytest.mark.parametrize('path', ['book', 'batch'])
     def test_prep_replicate(self, path):
