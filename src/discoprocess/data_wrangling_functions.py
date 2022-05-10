@@ -622,7 +622,12 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
 
 
                     array_indexes_to_drop = [index_to_drop_conc, index_to_drop_sat_time, index_to_drop_proton_peak, index_to_drop_ppm]
+
+                    print(significant_corr_attenuation.head())
+
+                    print(array_indexes_to_drop)
                     multi_index_to_drop_input = list(zip(*array_indexes_to_drop))
+                    print(multi_index_to_drop_input)
                     multi_index_to_drop = pd.MultiIndex.from_tuples(multi_index_to_drop_input, names=['concentration', 'sat_time', 'proton_peak_index', 'ppm'])
 
                     #append multi index to pts to remove
