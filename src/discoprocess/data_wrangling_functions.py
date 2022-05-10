@@ -630,6 +630,7 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
                     print("points being dropped are:", multi_index_to_drop)
 
                     # pass the multi index to drop to drop points from the parent dataframe
+                    #Problematic
                     significant_corr_attenuation = significant_corr_attenuation.drop(multi_index_to_drop, inplace = False)
 
     print('Removed insignificant points have been printed to the output folder for {}.'.format(current_df_title))
