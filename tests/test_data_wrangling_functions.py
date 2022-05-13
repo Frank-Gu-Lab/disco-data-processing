@@ -324,20 +324,13 @@ class TestT:
 
 
         actual = t_test(input_df)
-        print("actual\n", actual)
-        print(actual["t_results"])
-        print(actual["significance"])
+
 
         # preserve multi-index when reading in Excel file
         expected_left = pd.read_excel(expected_path + "/t_test_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
         expected_right = pd.read_excel(expected_path + "/t_test_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
         expected_right.columns = pd.MultiIndex.from_product([expected_right.columns, ['']])
         expected = pd.merge(expected_left, expected_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-        print("expected\n", expected)
-        print(expected["t_results"])
-        print(expected["significance"])
-
 
         pd.testing.assert_frame_equal(actual, expected)
 
