@@ -509,7 +509,7 @@ class TestCurveFit:
                 actual_table[i] = pd.read_excel(actual_table[i], index_col=0)
                 expected_table[i] = pd.read_excel(expected_table[i], index_col=0)
 
-                print(actual_table[i]["beta"].to_string())
+                #print(actual_table[i]["beta"].to_string())
 
                 pd.testing.assert_frame_equal(actual_table[i], expected_table[i], rtol=1e-3)
 
