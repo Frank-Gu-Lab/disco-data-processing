@@ -515,6 +515,7 @@ class TestCurveFit:
                 msg4 = "Not all data tables were generated and exported."
                 assert False, msg4
 
+                '''
     def test_execute_curvefit_book(self, remove, mocker):
         """ Checks for whether the curvefit was executed as expected; book path. Removes all generated plots during teardown.
 
@@ -593,4 +594,4 @@ class TestCurveFit:
 
             else:
                 msg4 = "Not all data tables were generated and exported."
-                assert False, msg4
+                assert False, msg4'''
