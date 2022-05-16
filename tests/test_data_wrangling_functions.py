@@ -187,7 +187,7 @@ class TestExport:
 class TestAttenuation:
     """This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions."""
 
-    @pytest.mark.parametrize('path', ['book', 'batch'])
+    @pytest.mark.parametrize('path', ['batch'])
     def test_add_attenuation(self, path, mocker):
         """ Checks for expected attenuation calculations applied for both book and batch paths.
 
@@ -209,7 +209,7 @@ class TestAttenuation:
         pd.testing.assert_frame_equal(actual_true, expected_true)
         pd.testing.assert_frame_equal(actual_false, expected_false)
 
-    @pytest.mark.parametrize('path', ['book', 'batch'])
+    @pytest.mark.parametrize('path', ['batch'])
     def test_add_corr_attenuation(self, path, mocker):
         """ Checks for expected corrected attenuation calculations applied for both the book and batch paths.
 
@@ -245,8 +245,8 @@ class TestAttenuation:
     def test_add_corr_attenuation_assertion(self, mocker):
         ''' Checks that a ValueError is raised when the equality checker returns False. '''
 
-        df_true = pd.read_excel(input_path + "/corr_att_book_true_input.xlsx", index_col=0)
-        df_false = pd.read_excel(input_path + "/corr_att_book_false_input.xlsx", index_col=0)
+        df_true = pd.read_excel(input_path + "/corr_att_batch_true_input.xlsx", index_col=0)
+        df_false = pd.read_excel(input_path + "/corr_att_batch_false_input.xlsx", index_col=0)
 
         mocker.patch("discoprocess.data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=False)
 
