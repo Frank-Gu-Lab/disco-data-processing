@@ -258,7 +258,7 @@ class TestAttenuation:
 class TestPrep:
     """ This class contains all the unit tests relating to the prep functions. """
 
-    @pytest.mark.parametrize('path', ['book', 'batch'])
+    @pytest.mark.parametrize('path', ['batch'])
     def test_prep_mean(self, path):
         """ Checks whether an Excel book is prepped for statistical analysis on a "mean" basis.
 
@@ -292,7 +292,7 @@ class TestPrep:
         #Breaks due to sample size mismatch in the last row
         pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
 
-    @pytest.mark.parametrize('path', ['book', 'batch'])
+    @pytest.mark.parametrize('path', [ 'batch'])
     def test_prep_replicate(self, path):
         """ Checks whether an Excel book is prepped for statistical analysis per replicate.
 
