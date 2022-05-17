@@ -41,6 +41,14 @@ class TestInitialize:
         msg3 = "Excel sheets were not extracted as expected."
         assert actual_sheets == expected_sheets, msg3
 
+    #New test for grab_conc that Matthew implemented (that's me!)
+    def test_grab_conc(self):
+
+        test_strings = ["CMC_131k_20uM (2)", "Batch-HPC_80k_20uM", "Batch-PVA99_85-105k_20uM", "Batch-PVP_55k_20uM"]
+
+        for string in test_strings:
+            assert grab_conc(string) == 20
+
 class TestWrangle:
     """ This class contains all the unit tests relating to the wrangle functions."""
 
@@ -157,7 +165,7 @@ class TestCleanBook:
 class TestEqualityChecker:
     """ This class contains all the unit tests related to the attenuation equality checkers."""
 
-    @pytest.mark.parametrize('path', ['book', 'batch'])
+    @pytest.mark.parametrize('path', ['batch'])
     def test_attenuation_calc_equality_checker(self, path):
         """ Checks whether two dataframes are equal according to the specifications of attenuation calculations; book path."""
 
@@ -260,3 +268,14 @@ class TestDofs:
 
         msg = "Dofs were not identifed as expected."
         assert actual == expected, msg
+
+    #This is wrong
+    def test_get_dofs_one_peak(self):
+
+        df = pd.read_excel(input_path + "/one_lev_dofs.xlsx")
+
+        print(df)
+
+        print(get_dofs_one_peak(df))
+
+        assert get_dofs_one_peak(df) == [19]

@@ -776,6 +776,7 @@ def get_dofs_one_peak(df):
     dof_list: list
         list to append to the dataframe with the degrees of freedom
     '''
+
     replicates = df.index.get_level_values(3)
 
     # use max num of replicates as a reference to identify degrees of freedom
