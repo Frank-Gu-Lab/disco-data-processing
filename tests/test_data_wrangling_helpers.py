@@ -274,6 +274,4 @@ class TestDofs:
 
         df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_helpers/input/get_dofs_one_peak_input.pkl")
 
-        print(get_dofs_one_peak(df))
-
         assert get_dofs_one_peak(df) == [2, 2, 2, 2, 2, 2, 2]
