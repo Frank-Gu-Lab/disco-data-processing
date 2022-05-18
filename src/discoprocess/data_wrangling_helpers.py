@@ -787,10 +787,13 @@ def get_dofs_one_peak(df):
 
     return dof_list
 
+#Function is never actually used
+'''
 def flatten_multicolumns(mean_df):
-    '''Takes in a mean df and flattens the multi-tier column
+'''
+'''Takes in a mean df and flattens the multi-tier column
     index into a directly indexable index.'''
-
+'''
     # clean up multi index for both
     colnames = mean_df.columns.get_level_values(0).values
     mean_df = mean_df.droplevel(1, axis=1)
@@ -800,6 +803,7 @@ def flatten_multicolumns(mean_df):
 
     return mean_df
 
+'''
 # helper for execute_curvefit
 def y_hat_fit(t, a, b):
     '''This function returns y_ikj_hat as the fit model based on alpha and beta.

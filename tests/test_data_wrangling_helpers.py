@@ -269,7 +269,7 @@ class TestDofs:
         msg = "Dofs were not identifed as expected."
         assert actual == expected, msg
 
-    #This is wrong
+    #Hey it works now :D
     def test_get_dofs_one_peak(self):
 
         df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_helpers/input/get_dofs_one_peak_input.pkl")
