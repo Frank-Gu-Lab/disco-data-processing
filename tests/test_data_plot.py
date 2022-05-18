@@ -65,12 +65,8 @@ class TestGeneratePlot:
 
         df = pd.read_excel(input_path + "/plot_input.xlsx", index_col=0)
 
-        print(df)
-
         with assert_plot_added(): # checks that a plot was created
             generate_concentration_plot(df, output_dir, current_df_title)
-
-        print(output_dir)
 
         actual = path + "/output/conc_CMC_20uM.png"
 
