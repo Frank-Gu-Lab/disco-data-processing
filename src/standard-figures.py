@@ -51,7 +51,13 @@ def grab_polymer_name(full_filepath, common_filepath):
     '''
 
     #Necessary for some windows operating systems
-    full_filepath = full_filepath.replace("\\", "/")
+    for char in full_filepath:
+        if char == "\\":
+            full_filepath = full_filepath.replace("\\", "/")
+
+    for char in common_filepath:
+        if char == "\\":
+            common_filepath = full_filepath.replace("\\", "/")
 
     polymer_name = full_filepath.split(common_filepath)[1]
     polymer_name = polymer_name[:-5] # remove the .xlsx
