@@ -64,7 +64,7 @@ def generate_directories(current_df_title, global_output_directory):
 
     return output_directory_exploratory, output_directory_curve, output_directory_tables, output_directory
 
-def modeling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book = 'batch'):
+def modeling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables):
     """This function outlines the full data-modeling procedure for the inputted dataframe.
 
     Parameters
@@ -118,7 +118,7 @@ def modeling_data(current_df_attenuation, current_df_title, output_directory, ou
 
     return current_df_mean, current_df_replicates
 
-def analyze_data(tuple_list, global_output_directory, batch_or_book = 'batch'):
+def analyze_data(tuple_list, global_output_directory):
         """This function outlines the full data visualization and modeling processing for a list of dataframes.
 
         Parameters
@@ -129,8 +129,6 @@ def analyze_data(tuple_list, global_output_directory, batch_or_book = 'batch'):
         global_output_directory : str
             Output directory for the main program, where the custom output directories of the all the inputted dataframes will be stored.
 
-        batch_or_book : str, {'book', 'batch'}
-            Defaults to book processing path, but if 'batch' is passed to function will pursue batch path.
         """
 
         for i in range(len(tuple_list)):

@@ -367,7 +367,7 @@ def count_sheets(name_sheets):
     return num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer
 
 # helper for add_attenuation_and_corr_attenuation_to_dataframe
-def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'batch'):
+def attenuation_calc_equality_checker(df1, df2):
     '''This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order
     in terms of their fixed experimental parameters: 'sample_or_control', 'replicate', 'title_string', 'concentration', and
     'sat_time'.
@@ -376,10 +376,6 @@ def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'batch'):
     ----------
     df1, df2 : Pandas.DataFrame
         DataFrames involved in the attenuation calculation, one where irrad bool is true and one where irrad bool is false.
-
-    batch_or_book : str, {'book', 'batch'}
-        String indicating the DataFrame's format. The default runs the 'book' path, but will run the 'batch' path
-        if indicated in the third argument.
 
     Returns
     -------

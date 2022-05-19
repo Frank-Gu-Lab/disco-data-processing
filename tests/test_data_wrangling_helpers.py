@@ -136,7 +136,7 @@ class TestEqualityChecker:
         df2 = pd.read_excel(input_path + "/checker2_" + path + ".xlsx", index_col=0)
 
         msg = "Equality checker did not correctly identify the dataframes as equal."
-        assert attenuation_calc_equality_checker(df1, df2, path), msg
+        assert attenuation_calc_equality_checker(df1, df2), msg
 
     def test_corrected_attenuation_calc_equality_checker(self):
         """ Checks whether the conditions for the corrected attenuation calculations are met between three dataframes."""
@@ -155,7 +155,7 @@ class TestEqualityChecker:
         df1 = pd.read_excel(input_path + "/true_" + filename, index_col=0)
         df2 = pd.read_excel(input_path + "/false_" + filename, index_col=0)
 
-        assert not attenuation_calc_equality_checker(df1, df2, 'batch')
+        assert not attenuation_calc_equality_checker(df1, df2)
 
     @pytest.mark.parametrize("filename", [f'att_book_true_subset{i}.xlsx' for i in range(1, 4)])
     def test_corrected_attenuation_calc_equality_checker_wrong_subsets(self, filename):

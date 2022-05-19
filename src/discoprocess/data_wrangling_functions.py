@@ -131,7 +131,7 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
     return final_clean_polymer_df_list
 
 
-def add_attenuation(current_book, batch_or_book = 'batch'):
+def add_attenuation(current_book):
     ''' This function calculates the attenuation if the dataframe passes all checks
     (based on the order of items) by means of simple arithmetic operations.
 
@@ -180,7 +180,7 @@ def add_attenuation(current_book, batch_or_book = 'batch'):
 
     return intensity_irrad_true, intensity_irrad_false
 
-def add_corr_attenuation(intensity_irrad_true, intensity_irrad_false, batch_or_book = 'batch'):
+def add_corr_attenuation(intensity_irrad_true, intensity_irrad_false):
     """This function calculates the corr_%_attenuation if the dataframe passes all checks
     (based on the order of items) by means of simple arithmetic operations.
 
@@ -192,8 +192,6 @@ def add_corr_attenuation(intensity_irrad_true, intensity_irrad_false, batch_or_b
     intensity_irrad_false : Pandas.DataFrame
         A dataframe containing the non-irradiated intensity datapoints
 
-    batch_or_book : str, {'book', 'batch'}
-        Default is book, but it will run the batch path if 'batch' is passed to function as the second arg.
 
     Returns
     -------
@@ -239,7 +237,7 @@ def add_corr_attenuation(intensity_irrad_true, intensity_irrad_false, batch_or_b
     else:
         raise ValueError("Error, input dataframes are not equal, cannot compute corrected signal attenutation in a one-to-one manner.")
 
-def prep_mean(corr_p_attenuation_df, batch_or_book = 'batch'):
+def prep_mean(corr_p_attenuation_df):
     '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
     columns have been added.
 
@@ -255,8 +253,6 @@ def prep_mean(corr_p_attenuation_df, batch_or_book = 'batch'):
         Dataframe after attenuation and corrected % attenuation have been calculated and added as columns
         (output from add_attenuation_and_corr_attenuation_to_dataframe).
 
-    batch_or_book : str, {'book', 'batch'}
-        Defaults to book processing path, but if 'batch' is passed to function will pursue batch path.
     -------
     mean_corr_attenuation_ppm : Pandas.DataFrame
         Modified dataframe, where columns not required for statistical modelling are dropped and columns for the parameters of
@@ -288,7 +284,7 @@ def prep_mean(corr_p_attenuation_df, batch_or_book = 'batch'):
 
     return mean_corr_attenuation_ppm
 
-def prep_replicate(corr_p_attenuation_df, batch_or_book = 'batch'):
+def prep_replicate(corr_p_attenuation_df):
     '''This function prepares the dataframe for statistical analysis after the attenuation and corr_%_attenuation
     columns have been added.
 
@@ -410,7 +406,7 @@ def compute_af(current_mean_stats_df, current_replicate_stats_df, af_denominator
     # return the mean data table with the amp_factor added
     return current_mean_stats_df, current_replicate_stats_df
 
-def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory, batch_or_book='batch'):
+def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory):
     '''This function identifies whether proton peaks pass or fail an acceptance criterion to allow
     them to be further analyzed. If the peaks fail, they are dropped from further analysis.
 
@@ -529,7 +525,7 @@ def drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, out
 
     return current_df_mean_passed, current_df_replicates_passed
 
-def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, output_directory3, current_df_title, batch_or_book = 'batch'):
+def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, output_directory3, current_df_title):
     ''' We are now ready to calculate the nonlinear curve fit models (or "hat" models),
     for both individual replicate data (via stats_df_replicates), and on a mean (or "bar") basis (via stats_df_mean).
 

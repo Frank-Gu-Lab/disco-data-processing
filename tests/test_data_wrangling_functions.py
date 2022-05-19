@@ -119,7 +119,7 @@ class TestAttenuation:
 
         mocker.patch("discoprocess.data_wrangling_functions.attenuation_calc_equality_checker", return_value=True)
 
-        actual_true, actual_false = add_attenuation(df, path)
+        actual_true, actual_false = add_attenuation(df)
 
         expected_true = pd.read_excel(expected_path + "/att_" + path + "_true_output.xlsx", index_col=0)
         expected_false = pd.read_excel(expected_path + "/att_" + path + "_false_output.xlsx", index_col=0)
@@ -142,7 +142,7 @@ class TestAttenuation:
 
         mocker.patch("discoprocess.data_wrangling_functions.corrected_attenuation_calc_equality_checker", return_value=True)
 
-        actual = add_corr_attenuation(df_true, df_false, path)
+        actual = add_corr_attenuation(df_true, df_false)
         expected = pd.read_excel(expected_path + "/corr_att_" + path + "_output.xlsx", index_col=0)
 
         pd.testing.assert_frame_equal(actual, expected)
@@ -187,7 +187,7 @@ class TestPrep:
 
         input_mean = pd.read_excel(input_path + "/prep_mean_" + path + "_input.xlsx", index_col=0)
 
-        actual = prep_mean(input_mean, path)
+        actual = prep_mean(input_mean)
         #print(actual)
 
         # preserve multi-index when reading in Excel file
@@ -216,7 +216,7 @@ class TestPrep:
 
         input_replicate = pd.read_excel(input_path + "/prep_replicate_" + path + "_input.xlsx", index_col=0)
 
-        actual = prep_replicate(input_replicate, path)
+        actual = prep_replicate(input_replicate)
 
         expected = pd.read_excel(expected_path + "/prep_replicate_" + path + "_output.xlsx", index_col=0)
 
@@ -297,7 +297,7 @@ class TestDropBadPeaks:
 
         df_replicates = pd.read_excel(input_path + "/drop_replicates_peaks_batch_input.xlsx", index_col=0)
 
-        actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir, 'batch')
+        actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir)
 
         # Preserve multi-index when reading in Excel file
         expected_mean_left = pd.read_excel(expected_path + "/drop_mean_peaks_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
@@ -345,7 +345,7 @@ class TestCurveFit:
         # unique concentrations [9]
         # unique replicates [1, 2, 3]
 
-        actual_mean, actual_replicates = execute_curvefit(df_mean, df_replicates, output_curve, output_table, df_title, 'batch')
+        actual_mean, actual_replicates = execute_curvefit(df_mean, df_replicates, output_curve, output_table, df_title)
 
         # Preserve multi-index when reading in Excel file
         expected_mean_left = pd.read_excel(expected_path + "/batch_curve_mean_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]

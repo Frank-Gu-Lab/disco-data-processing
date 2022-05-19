@@ -75,7 +75,7 @@ class TestModeling:
         mock5 = mocker.patch("discoprocess.data_analyze.drop_bad_peaks", return_value=(df, df))
         mock6 = mocker.patch("discoprocess.data_analyze.execute_curvefit", return_value=(df, df))
 
-        modeling_data(df, df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book = path)
+        modeling_data(df, df_title, output_directory, output_directory_curve, output_directory_tables)
 
         mocks = [mock1, mock2, mock3, mock4, mock5, mock6]
 
@@ -114,7 +114,7 @@ class TestAnalyze:
 
         mocks = [mock1, mock2, mock3, mock4, mock5, mock6]
 
-        analyze_data(tuple_list, global_output_directory, batch_or_book = path)
+        analyze_data(tuple_list, global_output_directory)
 
         # check that dependencies are called only once
         for mock in mocks:
