@@ -366,219 +366,6 @@ def count_sheets(name_sheets):
 
     return num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer
 
-# helper for book_to_dataframe
-def wrangle_book(b, name_sheets, sample_control_initializer, total_replicate_index):
-    """ This functions takes in a list of Excel sheets and translates it into a usable Pandas.DataFrame.
-
-    Parameters
-    ----------
-    b : str
-        Path file to the Excel Batch file of interest.
-
-    name_sheets : list
-        List of sheet names in b without Complete in them.
-
-    sample_control_initializer : list
-        List of sheets with control data to be initialized into a Pandas.DataFrame.
-
-    total_replicate_index : list
-        List of integers representing the replicate index of each sheet in sample_control_initializer.
-
-    Returns
-    -------
-    df_list : list
-        Experimental dataframes to be concatenated.
-    """
-    # initialize a list to contain the mini experimental dataframes collected from within the current book, which will be concatenated at the end to create one dataframe "organized_df" that represents this book
-    df_list = []
-
-    # loop through each sheet in the workbook
-    for i in range(len(name_sheets)):
-
-        # read in the current book's nth sheet into a Pandas dataframe
-        current_sheet_raw = pd.read_excel(b, sheet_name=i)
-        print("Reading Book Sheet:", i)
-
-        # if the name of the sheet is not a sample or control, skip this sheet and continue to the next one
-        if (any(['ample' not in name_sheets[i]]) & any(['ontrol' not in name_sheets[i]])):
-            print("Skipping sheet", i, "as not a sample or control.")
-            continue
-
-        # drop first always empty unnamed col (NOTE - consider building error handling into this to check the col is empty first)
-        to_drop = ['Unnamed: 0']
-        current_sheet_raw.drop(columns = to_drop, inplace = True)
-
-        # loop through columns and "fill right" to replace all Unnamed columns with their corresponding title_string value
-        for c in current_sheet_raw.columns:
-            current_sheet_raw.columns = [current_sheet_raw.columns[i-1] if 'Unnamed' in current_sheet_raw.columns[i] else current_sheet_raw.columns[i] for i in range(len(current_sheet_raw.columns))]
-
-        # identifies the coordinates of the left-most parameter in each experimental set, conc (um)
-        index, column = np.where(current_sheet_raw == 'conc (um)')
-
-        # assigns coordinates of all upper left 'conc (um) cells to an index (row) array and a column array
-        conc_indices = current_sheet_raw.index.values[index]
-        conc_columns = current_sheet_raw.columns.values[column]
-
-        # determine the number of experimental rows in each NMR results sub-table
-        # subtract one to exclude conc cell row itself
-        num_experimental_indices = np.unique(conc_indices)[2] - np.unique(conc_indices)[1] - 1
-
-        # determine the number of experimental columns in each NMR results sub-table
-        (unique_exp_cols, count_experimental_cols) = np.unique(conc_columns, return_counts = True)
-        num_experimental_cols = np.unique(count_experimental_cols)[0]
-
-        # initialize/reset dfs, current is for CURRENT sub-tables being looped over, organized_df is to concatenate all the sub-dfs in this book
-        current_exp_df = []
-        organized_df = []
-
-        # make a list of coordinate pair tuples for this sheet using list comprehension
-        sheet_coords_list = [(conc_indices[i], conc_columns[i]) for i in range(len(conc_indices))]
-
-        for coords in sheet_coords_list:
-
-            # Determine the current 'sample_or_control' and 'replicate' values by taking the nth value (aka current sheet value) from the lists determined above
-            current_sample_or_control = sample_control_initializer[i]
-            current_replicate = total_replicate_index[i]
-
-            # assign current values to the fixed experimental parameters for this experimental sub-table
-            fixed_parameters_per_set = current_sheet_raw.loc[coords[0], coords[1]]
-
-            # Hard coding the indices of the different parameters based on constant pattern in input file
-            current_title_string = fixed_parameters_per_set.index[0]
-            current_concentration = fixed_parameters_per_set[1]
-            current_sat_time = fixed_parameters_per_set[3]
-            current_irrad_bool = fixed_parameters_per_set[5]
-
-            # initialize/reset experimental lists to null for this experimental set
-            list_current_ppm_experimental = []
-            list_current_intensity_experimental = []
-            list_current_width_experimental = []
-            list_current_area_experimental = []
-            list_current_type_experimental = []
-            list_current_flags_experimental = []
-            list_current_impuritycomp_experimental = []
-            list_current_annotation_experimental = []
-            list_current_range_experimental = []
-            list_current_normalized_experimental = []
-            list_current_absolute_experimental = []
-
-            # now need to find and assign the sub-table's actual experimental data to the new lists
-
-            # Initializing the "boundaries" of the sub-table rectangle containing values of interest in a generalizable way, based on conc as the upper left value
-            experimental_index_starter = coords[0]+1
-            experimental_index_range = range(num_experimental_indices)
-            experimental_column_range = range(num_experimental_cols)
-            combined_experimental_index_range = experimental_index_starter + experimental_index_range
-
-            # Obtain experimental column range using boolean mask as column labels are title_strings for each experimental set
-            experimental_column_range_mask = current_sheet_raw.columns.get_loc(coords[1])
-            combined_experimental_column_range = np.where(experimental_column_range_mask)
-
-            # loop through and collect experimental index and experimental column range for the ith and jth experimental sub-table
-            for ei in combined_experimental_index_range:
-                for ec in combined_experimental_column_range:
-
-                    # use iloc to grab NMR experimental variables for this set into a series
-                    variable_parameters_per_set = current_sheet_raw.iloc[ei, ec]
-
-                    # append designated variable parameters into lists for those parameters in the current experimental sub-set
-                    # this is hard coded based on known order of columns in the input file structure that should theoretically be consistent...
-                    list_current_ppm_experimental.append(variable_parameters_per_set.iloc[1])
-                    list_current_intensity_experimental.append(variable_parameters_per_set.iloc[2])
-                    list_current_width_experimental.append(variable_parameters_per_set.iloc[3])
-                    list_current_area_experimental.append(variable_parameters_per_set.iloc[4])
-                    list_current_type_experimental.append(variable_parameters_per_set.iloc[5])
-                    list_current_flags_experimental.append(variable_parameters_per_set.iloc[6])
-                    list_current_impuritycomp_experimental.append(variable_parameters_per_set.iloc[7])
-                    list_current_annotation_experimental.append(variable_parameters_per_set.iloc[8])
-                    list_current_range_experimental.append(variable_parameters_per_set.iloc[11])
-                    list_current_normalized_experimental.append(variable_parameters_per_set.iloc[12])
-                    list_current_absolute_experimental.append(variable_parameters_per_set.iloc[13])
-
-
-            # after all the experimental lists are populated, define length of the experimental parameter lists (number of true experimental rows)
-            exp_list_length = len(list_current_ppm_experimental)
-
-            # create "ranged" lists of the constant experimental values to make them the same length as the unique variable experimental values, so we can add information "per observation" to the dataframe
-            ranged_sample_or_control = exp_list_length * [current_sample_or_control]
-            ranged_replicate = exp_list_length * [current_replicate]
-            ranged_title_string = exp_list_length * [current_title_string]
-            ranged_concentration = exp_list_length * [current_concentration]
-            ranged_sat_time = exp_list_length * [current_sat_time]
-            ranged_irrad_bool = exp_list_length * [current_irrad_bool]
-
-            # assign all current experimental values for this experimental set to a dataframe via a dictionary
-            current_dict = {"sample_or_control":ranged_sample_or_control,
-                                "replicate":ranged_replicate,
-                                "title_string":ranged_title_string,
-                                "concentration":ranged_concentration,
-                                "sat_time":ranged_sat_time,
-                                "irrad_bool":ranged_irrad_bool,
-                                "ppm":list_current_ppm_experimental,
-                                "intensity":list_current_intensity_experimental,
-                                "width":list_current_width_experimental,
-                                "area":list_current_area_experimental,
-                                "type":list_current_type_experimental,
-                                "flags":list_current_flags_experimental,
-                                "impurity_compound":list_current_impuritycomp_experimental,
-                                "annotation":list_current_annotation_experimental,
-                                "range":list_current_range_experimental,
-                                "normalized":list_current_normalized_experimental,
-                                "absolute":list_current_absolute_experimental}
-
-            current_exp_df = pd.DataFrame(current_dict)
-
-            # before moving on to next experimental set, append the dataframe from this experimental set to a book-level list of dataframes
-            df_list.append(current_exp_df)
-
-        print("Data frame for the experimental set at coordinates:", coords, "has been appended to the book-level list of dataframes.\n")
-
-    return df_list
-
-# helper for book_to_dataframe
-def clean_book_list(df_list, current_book_title):
-    ''' Concatenates and cleans a list of dataframes extracted from an Excel book by removing redundant rows.
-
-    Parameters
-    ----------
-    df_list : list
-        List of mini dataframes to be concatenated.
-
-    current_book_title : str
-        Title of current Excel book.
-
-    Returns
-    -------
-    clean_df : Pandas.Dataframes
-        Cleaned, concatenated dataframe for current_book_title.
-    '''
-
-    # concatenate the mini dataframes appended to the df_list into one big organized dataframe for this book!
-    organized_df = pd.concat(df_list)
-    print("The input book {} has been wrangled into an organized dataframe! Now initializing dataframe cleaning steps.\n".format(current_book_title))
-
-    # BEGIN CLEANING THE ORGANIZED DATAFRAME ----------------------------------------------------
-
-    # Need to remove redundant rows (generated by the data processing loops above)
-
-    # assign prospective redundant title rows at index zero to a variable
-    organized_df_redundant = organized_df[organized_df.index == 0]
-
-    # to make sure the standard expected redundant rows are actually redundant (expected redundant row is a duplicate of the column labels)
-    # check that there is only one unique 'absolute' value (duplicate rows will only have one unique value, as they are titles)
-    if organized_df_redundant.nunique().loc['absolute'] == 1:
-        clean_df = organized_df[organized_df.index != 0]
-    else:
-        print("Warning, assumed redundant rows for further processing are not actually redundant. Proceeding.\n")
-        clean_df = organized_df
-
-    # remove any duplicate rows
-    clean_df = clean_df.drop_duplicates()
-
-    print('Dataframe cleaning complete!\n')
-
-    return clean_df
-
 # helper for add_attenuation_and_corr_attenuation_to_dataframe
 def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'book'):
     '''This functions checks to see if two subset dataframes for the attenuation calculation are equal and in the same order
@@ -607,44 +394,34 @@ def attenuation_calc_equality_checker(df1, df2, batch_or_book = 'book'):
 
     if (df1.shape == df2.shape):
 
-        if batch_or_book == 'book':
 
-            subset_compare_1 = df1.loc[:, "sample_or_control":"sat_time"]
-            subset_compare_2 = df2.loc[:, "sample_or_control":"sat_time"]
+        #check sample_or_control is the same
+        subset_compare_1 = df1.sample_or_control.values
+        subset_compare_2 = df2.sample_or_control.values
+        exactly_equal_1 = np.array_equal(subset_compare_1, subset_compare_2)
 
-            exactly_equal = subset_compare_2.equals(subset_compare_1)
+        #check replicate is the same
+        subset_compare_1 = df1.replicate.values
+        subset_compare_2 = df2.replicate.values
+        exactly_equal_2 = np.array_equal(subset_compare_1, subset_compare_2)
+        #             exactly_equal_2 = subset_compare_2.equals(subset_compare_1)
 
-            return exactly_equal
+        #check proton peak index is the same
+        subset_compare_1 = df1.proton_peak_index.values
+        subset_compare_2 = df2.proton_peak_index.values
+        exactly_equal_3 = np.array_equal(subset_compare_1, subset_compare_2)
+
+        #check sat time is the same
+        subset_compare_1 = df1.sat_time.values
+        subset_compare_2 = df2.sat_time.values
+        exactly_equal_4 = np.array_equal(subset_compare_1, subset_compare_2)
+
+        # if passes all 4 checks return true, if not false
+        if exactly_equal_1 == exactly_equal_2 == exactly_equal_3 == exactly_equal_4 == True:
+            return True
 
         else:
-
-            #check sample_or_control is the same
-            subset_compare_1 = df1.sample_or_control.values
-            subset_compare_2 = df2.sample_or_control.values
-            exactly_equal_1 = np.array_equal(subset_compare_1, subset_compare_2)
-
-            #check replicate is the same
-            subset_compare_1 = df1.replicate.values
-            subset_compare_2 = df2.replicate.values
-            exactly_equal_2 = np.array_equal(subset_compare_1, subset_compare_2)
-            #             exactly_equal_2 = subset_compare_2.equals(subset_compare_1)
-
-            #check proton peak index is the same
-            subset_compare_1 = df1.proton_peak_index.values
-            subset_compare_2 = df2.proton_peak_index.values
-            exactly_equal_3 = np.array_equal(subset_compare_1, subset_compare_2)
-
-            #check sat time is the same
-            subset_compare_1 = df1.sat_time.values
-            subset_compare_2 = df2.sat_time.values
-            exactly_equal_4 = np.array_equal(subset_compare_1, subset_compare_2)
-
-            # if passes all 4 checks return true, if not false
-            if exactly_equal_1 == exactly_equal_2 == exactly_equal_3 == exactly_equal_4 == True:
-                return True
-
-            else:
-                return False
+            return False
 
     else:
         raise ValueError("Error, irrad_false and irrad_true dataframes are not the same shape to begin with.")

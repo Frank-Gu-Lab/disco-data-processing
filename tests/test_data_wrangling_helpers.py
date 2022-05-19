@@ -87,32 +87,7 @@ class TestWrangle:
             assert actual[i][0] == expected[i][0], msg2
             pd.testing.assert_frame_equal(actual[i][1], expected[i][1], check_dtype=False, check_exact=True)
 
-    def test_wrangle_book(self):
-        """ As part of book initialization, checks for whether the expected dataframes from an Excel book are returned in list format.
 
-        Notes
-        -----
-        Equality checking ignores datatype matching.
-        """
-
-        b = input_path + "/wrangle_book_input.xlsx"
-
-        name_sheets = ['Sample', 'Control']
-
-        sample_control = ['sample', 'control']
-
-        replicate_index = [1, 1]
-
-        actual = wrangle_book(b, name_sheets, sample_control, replicate_index)
-
-        dfs = sorted(glob.glob(expected_path + "/wrangle_book_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order
-        dfs = [pd.read_excel(df, index_col=0) for df in dfs]
-
-        msg1 = "{} dataframes were initialized, expected {}.".format(len(actual), len(dfs))
-        assert len(actual) == len(dfs), msg1
-
-        for i in range(len(actual)):
-            pd.testing.assert_frame_equal(actual[i], dfs[i], check_dtype=False, check_exact=True)
 
 class TestCount:
     """ This class contains all the unit tests related to the helper function count_sheets."""
@@ -149,18 +124,6 @@ class TestCount:
         msg5 = "Control replicate indices are not ordered as expected."
         assert control_replicate_initializer == expected_control_replicate, msg5
 
-class TestCleanBook:
-
-    def test_clean_book_list(self):
-
-        dfs = sorted(glob.glob(expected_path + "/wrangle_book_output/*"), key=lambda x : int(os.path.basename(x)[6:-5])) # sort by numerical order
-        dfs = [pd.read_excel(df, index_col=0) for df in dfs]
-
-        actual = clean_book_list(dfs, "KHA")
-
-        expected = pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0)
-
-        pd.testing.assert_frame_equal(actual, expected, check_dtype=False)
 
 class TestEqualityChecker:
     """ This class contains all the unit tests related to the attenuation equality checkers."""
@@ -184,14 +147,6 @@ class TestEqualityChecker:
 
         msg = "Equality checker did not correct identify the dataframes as equal."
         assert corrected_attenuation_calc_equality_checker(df1, df2, df3), msg
-
-    def test_attenuation_calc_equality_checker_wrong_book_subset(self):
-        ''' Checks whether a ValueError is raised when subsets of the true and false irradiated dataframes do not match. '''
-
-        df1 = pd.read_excel(input_path + "/checker_book_wrong_subset_true.xlsx", index_col=0)
-        df2 = pd.read_excel(input_path + "/checker_book_wrong_subset_false.xlsx", index_col=0)
-
-        assert not attenuation_calc_equality_checker(df1, df2)
 
     @pytest.mark.parametrize("filename", [f'att_batch_subset_{i}.xlsx' for i in range(1, 5)])
     def test_attenuation_calc_equality_checker_wrong_batch_subsets(self, filename):

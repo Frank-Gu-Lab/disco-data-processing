@@ -60,77 +60,6 @@ class TestDataFrameConversion:
 
         assert actual == expected, "Replicate index list was not properly created!"
 
-
-'''
-    def test_book_to_dataframe(self, mocker):
-
-        b = input_path + "/KHA.xlsx"
-
-        def mock_count_sheets():
-
-            num_samples = 3
-            num_controls = 3
-            sample_control_initializer = ['sample', 'sample', 'sample', 'control', 'control', 'control']
-            sample_replicate_initializer = [1, 2, 3]
-            control_replicate_initializer = [1, 2, 3]
-
-            return num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer
-
-        mock1 = mocker.patch("discoprocess.data_wrangling_functions.count_sheets", return_value=mock_count_sheets())
-        mock2 = mocker.patch("discoprocess.data_wrangling_functions.wrangle_book")
-        mock3 = mocker.patch("discoprocess.data_wrangling_functions.clean_book_list", return_value=pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0))
-
-        mocks = [mock1, mock2]
-
-        actual = book_to_dataframe(b)
-
-        for mock in mocks:
-            mock.assert_called_once()
-
-        expected = ("KHA", pd.read_excel(expected_path + "/book_to_dataframe_output.xlsx", index_col=0))
-
-        assert actual[0] == expected[0], "Book name was not properly extracted! Actual: {}, Expected: KHA".format(actual[0])
-        pd.testing.assert_frame_equal(actual[1], expected[1])
-
-        # total_replicate_index
-        actual_index = mock2.call_args_list[0][0][-1]
-        expected_index = [1, 2, 3, 1, 2, 3]
-
-        assert actual_index == expected_index, "Replicate index list was not properly created!"
-
-    # testing assertions for book_to_dataframe
-    def test_book_to_dataframe_unequal(self, mocker):
-'''
-
-''' Checks whether a ValueError is raised when the number of samples and controls do not match.
-
-        Notes
-        -----
-        Mocker modifies the output for count_sheets from num_controls = 3 to num_controls = 2.
-        '''
-'''
-        book = input_path + "/KHA.xlsx"
-
-        def return_mock_count():
-
-            num_samples = 3
-            num_controls = 2
-
-            sample_control_initializer = ['sample', 'sample', 'sample', 'control', 'control', 'control']
-
-            sample_replicate_initializer = [1, 2, 3]
-
-            control_replicate_initializer = [1, 2, 3]
-
-            return num_samples, num_controls, sample_control_initializer, sample_replicate_initializer, control_replicate_initializer
-
-        mocker.patch("discoprocess.data_wrangling_functions.count_sheets", return_value=return_mock_count())
-
-        with pytest.raises(ValueError) as e:
-            book_to_dataframe(book)
-
-        assert e.match('ERROR: The number of sample sheets is not equal to the number of control sheets in {} please confirm the data in the book is correct.'.format(re.escape(book)))
-
 class TestCleanBatch:
     """ This class contains all the unit tests relating to the function test_clean_batch_list. """
 
@@ -171,18 +100,7 @@ class TestCleanBatch:
             actual_df = actual[i]
             expected_df = pd.read_excel(output_list[i], index_col=0)
             pd.testing.assert_frame_equal(actual_df, expected_df, check_dtype=False)
-'''
-class TestExport:
 
-    def test_export_clean_books(self, remove):
-
-        name = 'test'
-        df = pd.DataFrame({'a':1, 'b':2}, index=['a','b'])
-        output_dir = remove
-
-        export_clean_books(name, df, output_dir)
-
-        assert os.path.isfile(output_dir + "/" + name + "/" + "test_clean_raw_df.xlsx"), "Exported file could not be found."
 
 class TestAttenuation:
     """This class contains all the unit tests relating to the add_attenuation and add_corr_attenuation functions."""
@@ -233,7 +151,7 @@ class TestAttenuation:
     def test_add_attenuation_assertion(self, mocker):
         ''' Checks that a ValueError is raised when the equality checker returns False. '''
 
-        df = pd.read_excel(input_path + "/att_book_input.xlsx", index_col=0)
+        df = pd.read_excel(input_path + "/att_batch_input.xlsx", index_col=0)
 
         mocker.patch("discoprocess.data_wrangling_functions.attenuation_calc_equality_checker", return_value=False)
 
@@ -273,17 +191,12 @@ class TestPrep:
         #print(actual)
 
         # preserve multi-index when reading in Excel file
-        if path == 'book':
-            expected_mean_left = pd.read_excel(expected_path + "/prep_mean_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-            expected_mean_right = pd.read_excel(expected_path + "/prep_mean_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-            expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
 
-        else:
-            expected_mean_left = pd.read_excel(expected_path + "/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
-            expected_mean_right = pd.read_excel(expected_path + "/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
-            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-            expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
+
+        expected_mean_left = pd.read_excel(expected_path + "/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, :2]
+        expected_mean_right = pd.read_excel(expected_path + "/prep_mean_batch_output.xlsx", header = [0, 1], index_col=[0, 1, 2, 3]).iloc[:, 2:].droplevel(1, axis=1)
+        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
+        expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index", "ppm"), right_on=("concentration", "sat_time", "proton_peak_index", "ppm"))
 
 
         #print(expected)
@@ -369,38 +282,6 @@ class TestAF:
 class TestDropBadPeaks:
     """This class contains all the unit tests relating to the execute_curvefit function."""
 
-    #Not caring about book path so I am going to neglect these errors for now.
-    '''
-    def test_drop_bad_peaks_book(self, remove):
-        with pytest.raises(NameError):
-            """ Checks whether the expected peaks were dropped and removes any generated files upon teardown. """
-
-            # SETUP
-            output_dir = remove
-            df_title = "KHA"
-
-            # Preserve multi-index when reading in Excel file
-            df_mean = pd.read_excel(input_path + "/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-            df_mean_other = pd.read_excel(input_path + "/drop_mean_peaks_book_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-            df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
-            mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-            df_replicates = pd.read_excel(input_path + "/drop_replicates_peaks_book_input.xlsx", index_col=0)
-
-            actual_mean, actual_replicates = drop_bad_peaks(mean, df_replicates, df_title, output_dir)
-
-            # Preserve multi-index when reading in Excel file
-            expected_mean_left = pd.read_excel(expected_path + "/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-            expected_mean_right = pd.read_excel(expected_path + "/drop_mean_peaks_book_output.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-            expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-            expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-            expected_replicates = pd.read_excel(expected_path + "/drop_replicates_peaks_book_output.xlsx", index_col=0)
-
-            pd.testing.assert_frame_equal(actual_mean, expected_mean, check_exact=True)
-
-            pd.testing.assert_frame_equal(actual_replicates, expected_replicates, check_exact=True)
-            '''
     def test_drop_bad_peaks_batch(self, remove):
 
         # SETUP
@@ -520,84 +401,3 @@ class TestCurveFit:
             else:
                 msg4 = "Not all data tables were generated and exported."
                 assert False, msg4
-
-                '''
-    def test_execute_curvefit_book(self, remove, mocker):
-        """ Checks for whether the curvefit was executed as expected; book path. Removes all generated plots during teardown.
-
-        Notes
-        -----
-        Equality checking uses a relative tolerance of 1e-3.
-        Simply checks for filepath existence.
-        """
-
-        # SETUP
-        output_dir = remove
-        df_title = "KHA"
-        output_curve = "{}/curve_fit_plots_from_{}".format(output_dir, df_title)
-        output_table = "{}/data_tables_from_{}".format(output_dir, df_title)
-
-        os.mkdir(output_curve)
-        os.mkdir(output_table)
-
-        mock1 = mocker.patch("discoprocess.data_wrangling_functions.generate_curvefit_plot")
-
-        # Preserve multi-index when reading in Excel file
-        df_mean = pd.read_excel(input_path + "/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-        df_mean_other = pd.read_excel(input_path + "/book_mean_input.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-        df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
-        mean = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-        df_replicates = pd.read_excel(input_path + "/book_replicates_input.xlsx", index_col=0)
-
-        actual_mean, actual_replicates = execute_curvefit(mean, df_replicates, output_curve, output_table, df_title)
-
-        # Preserve multi-index when reading in Excel file
-        expected_mean_left = pd.read_excel(expected_path + "/book_meancurve.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-        expected_mean_right = pd.read_excel(expected_path + "/book_meancurve.xlsx", header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-        expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-        expected_mean = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-        expected_replicates = pd.read_excel(expected_path + "/book_replicatescurve.xlsx", index_col=0)
-
-        pd.testing.assert_frame_equal(actual_mean, expected_mean, rtol=1e-3)
-        pd.testing.assert_frame_equal(actual_replicates, expected_replicates, rtol=1e-3)
-
-        # checking if mocked function was called (mean, rep)
-        for i in range(len(mock1.call_args_list)):
-            print(mock1.call_args_list[i][-1])
-        assert mock1.call_count == 35 # some iterations were skipped
-
-        # check if the same plots are generated (can only compare filepath/name)
-        actual_table = glob.glob(output_table + "/*")
-        expected_table = glob.glob(expected_path + "/data_tables_from_KHA/*")
-
-        if len(actual_table) != len(expected_table):
-            msg2 = "Not all data tables were generated."
-            assert len(actual_table) == len(expected_table), msg2
-
-        for i in range(len(actual_table)):
-            if "mean" in actual_table[i] and "mean" in expected_table[i]:
-                # Preserve multi-index when reading in Excel file
-                df_mean = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-                df_mean_other = pd.read_excel(actual_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-                df_mean_other.columns = pd.MultiIndex.from_product([df_mean_other.columns, ['']])
-                actual = pd.merge(df_mean, df_mean_other, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-                # Preserve multi-index when reading in Excel file
-                expected_mean_left = pd.read_excel(expected_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, :4]
-                expected_mean_right = pd.read_excel(expected_table[i], header = [0, 1], index_col=[0, 1, 2]).iloc[:, 4:].droplevel(1, axis=1)
-                expected_mean_right.columns = pd.MultiIndex.from_product([expected_mean_right.columns, ['']])
-                expected = pd.merge(expected_mean_left, expected_mean_right, left_on=("concentration", "sat_time", "proton_peak_index"), right_on=("concentration", "sat_time", "proton_peak_index"))
-
-                pd.testing.assert_frame_equal(actual, expected, rtol=1e-3)
-
-            elif "replicate" in actual_table[i] and "replicate" in expected_table[i]:
-                actual_table[i] = pd.read_excel(actual_table[i], index_col=0)
-                expected_table[i] = pd.read_excel(expected_table[i], index_col=0)
-
-                pd.testing.assert_frame_equal(actual_table[i], expected_table[i], rtol=1e-3)
-
-            else:
-                msg4 = "Not all data tables were generated and exported."
-                assert False, msg4'''
