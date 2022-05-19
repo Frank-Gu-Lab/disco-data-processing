@@ -91,8 +91,8 @@ def modeling_data(current_df_attenuation, current_df_title, output_directory, ou
     """
     # STEP 1 OF 5 - Prepare and generate mean dataframe of current data for stats with degrees of freedom and sample size included -----
 
-    current_df_mean = prep_mean(current_df_attenuation, batch_or_book)
-    current_df_replicates = prep_replicate(current_df_attenuation, batch_or_book)
+    current_df_mean = prep_mean(current_df_attenuation)
+    current_df_replicates = prep_replicate(current_df_attenuation)
 
     # STEP 2 OF 5 - Perform t test for statistical significance -------------------------
     current_df_mean = t_test(current_df_mean, p=0.05)
@@ -108,13 +108,13 @@ def modeling_data(current_df_attenuation, current_df_title, output_directory, ou
     output_file_name = "stats_analysis_output_mean_all_{}.xlsx".format(current_df_title) # mean
     current_df_mean.to_excel(os.path.join(output_directory_tables, output_file_name))
 
-    # STEP 4 OF 5 - Drop proton peaks from further analysis that fail our acceptance criteria -----------------------------------------
+    # STEP 4 OF 5 - Drop proton peaks from further analysis that fail our acceptance criteria ---------------b--------------------------
 
-    current_df_mean, current_df_replicates = drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory, batch_or_book)
+    current_df_mean, current_df_replicates = drop_bad_peaks(current_df_mean, current_df_replicates, current_df_title, output_directory)
 
     # STEP 5 OF 5 - Perform curve fitting, generate plots, and export results to file  -----------------------------------------
 
-    current_df_mean, current_df_replicates = execute_curvefit(current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title, batch_or_book)
+    current_df_mean, current_df_replicates = execute_curvefit(current_df_mean, current_df_replicates, output_directory_curve, output_directory_tables, current_df_title)
 
     return current_df_mean, current_df_replicates
 
@@ -152,8 +152,8 @@ def analyze_data(tuple_list, global_output_directory, batch_or_book = 'batch'):
 
             # CALCULATE ATTENUATION & CORR ATTENUATION -----------------------------------
 
-            df_true, df_false = add_attenuation(current_df, batch_or_book)
-            current_df_attenuation = add_corr_attenuation(df_true, df_false, batch_or_book)
+            df_true, df_false = add_attenuation(current_df)
+            current_df_attenuation = add_corr_attenuation(df_true, df_false)
 
             # PERFORM EXPLORATORY DATA VISUALIZATION -----------------------------------
 
@@ -165,6 +165,6 @@ def analyze_data(tuple_list, global_output_directory, batch_or_book = 'batch'):
 
             # BEGINNING PART 2 -------- Modelling the Data ---------------------------------------
 
-            current_df_mean, current_df_replicates = modeling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables, batch_or_book)
+            current_df_mean, current_df_replicates = modeling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables)
 
             print("All activities are now completed for: {}".format(current_df_title))

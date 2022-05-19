@@ -164,7 +164,7 @@ def add_attenuation(current_book, batch_or_book = 'batch'):
     intensity_irrad_false = current_book.loc[(current_book['irrad_bool'] == False), ['polymer_name', 'proton_peak_index',  'ppm_range', 'ppm', 'sample_or_control', 'replicate', 'concentration', 'sat_time', 'absolute']]
 
     # check if the fixed experimental values in irrad true and irrad false are equal, in the same order, and the same size, so that one to one calculations can be performed to calculate attenuation.
-    fixed_values_equality_check = attenuation_calc_equality_checker(intensity_irrad_true, intensity_irrad_false, batch_or_book)
+    fixed_values_equality_check = attenuation_calc_equality_checker(intensity_irrad_true, intensity_irrad_false)
 
     # if the test passes, calculate % attenuation and append to dataframe
     if fixed_values_equality_check == True:
@@ -692,10 +692,9 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
                 stats_df_replicates.loc[(stats_df_replicates['proton_peak_index'] == p) & (stats_df_replicates['concentration'] == c) & (stats_df_replicates['replicate'] == r), ('AFo')] = [amp_factor_instantaneous]*(len(y_ikj))
 
                 #determine mean current ppm across the sat_times for this replicate so that we can add it to the file name
-                if batch_or_book == 'book':
-                    mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].mean().astype(float).round(4)
-                else:
-                    mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].values[0].astype(float).round(4)
+
+
+                mean_current_ppm = one_graph_data.loc[(one_graph_data['concentration'] == c) & (one_graph_data['proton_peak_index'] == p) & (one_graph_data['replicate'] == r)]['ppm'].values[0].astype(float).round(4)
 
                 # file name for curve fits by replicate
                 output_file_name_figsrep = "{}/replicate{}_conc{}_ppm{}.png".format(output_directory2, r, c, mean_current_ppm)
@@ -709,18 +708,11 @@ def execute_curvefit(stats_df_mean, stats_df_replicates, output_directory2, outp
     stats_df_replicates.to_excel(os.path.join(output_directory3, output_file_name))
 
     #export mean final results table to a summary file in Excel
-    if batch_or_book == 'book':
+    #if there are replicates, and mean data was created, export the final mean data to excel as well
+    if stats_df_mean.shape[0] != 0:
 
         output_file_name = "stats_analysis_output_mean_{}.xlsx".format(current_df_title)
         stats_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
-
-    else:
-
-        #if there are replicates, and mean data was created, export the final mean data to excel as well
-        if stats_df_mean.shape[0] != 0:
-
-            output_file_name = "stats_analysis_output_mean_{}.xlsx".format(current_df_title)
-            stats_df_mean.to_excel(os.path.join(output_directory3, output_file_name))
 
     print('Export of all figures to file complete!')
     return stats_df_mean, stats_df_replicates
