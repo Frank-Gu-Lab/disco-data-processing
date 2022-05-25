@@ -192,3 +192,19 @@ class TestETL:
         df = etl_per_sat_time("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_input/tables_*", "C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_output")
 
         pd.testing.assert_frame_equal(df, expected_df, check_exact=True, check_dtype=False)
+
+    def test_etl_per_proton(self):
+
+        expected_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_per_proton_input/expected_df.pkl")
+
+        df = etl_per_proton(pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/expected_df.pkl"))
+
+        pd.testing.assert_frame_equal(df, expected_df, check_exact=True, check_dtype=False)
+
+    def test_etl_per_replicate(self):
+
+        expected_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_per_replicate_input/expected_df.pkl")
+
+        df = etl_per_replicate("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_input/tables_*", "C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_output")
+
+        pd.testing.assert_frame_equal(df, expected_df, check_exact=True, check_dtype=False)
