@@ -508,7 +508,6 @@ def etl_per_sat_time(source_path, destination_path):
     move(source_path, destination_path)
 
     all_files = glob.glob("{}/*.xlsx".format(destination_path))
-
     # grab list of filepaths for:
     # - all replicates (bind and not bind),
     # - binding only replicates (with individual AFo & SSE)
