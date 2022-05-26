@@ -157,3 +157,116 @@ def resonance_and_column_checker(list_of_raw_books):
 
 
                     count += 1
+
+def range_checker(list_of_raw_books):
+    '''
+    Checks to make sure the ranges are the same for all tables in the excel files
+
+    Input:
+        list_of_raw_books - list containing excel books to be PROCESSED
+
+    Output:
+        Nothing if all clear, an error if the ranges dont match across all tables.
+
+    '''
+
+    for b in list_of_raw_books:
+
+            current_book_title = os.path.basename(str(b))
+
+            # return list of unique polymer names in the book, their replicates, and the sheets containing raw data to loop through
+            unique_polymers, unique_polymer_replicates, name_sheets = initialize_excel_batch_replicates(b)
+
+            # generate a new replicate index list that holds the nth replicate associated with each raw data sheet in book
+            replicate_index = []
+
+            for i in range(len(unique_polymer_replicates)):
+                current_replicate_range = range(1,int(unique_polymer_replicates[i]+1),1)
+                for j in current_replicate_range:
+                    replicate_index.append(j)
+
+            # initialize an empty list and dataframe to contain the mini experimental dataframes collected from one polymer, which will be ultimately appended to the global list_of_clean_dfs as a tuple with the polymer name
+            current_polymer_df_list = []
+            list_of_clean_dfs = []
+            current_polymer_df = pd.DataFrame([],[])
+
+            # loop once through every sheet in the book containing raw data, and execute actions along the way
+            for i in range(len(name_sheets)):
+
+                #assign current sheet name to current sheet
+                current_sheet = name_sheets[i]
+
+                # read in the current book's current sheet into a Pandas dataframe
+                current_sheet_df = pd.read_excel(b, sheet_name = current_sheet)
+
+                #initialize nth_replicate to the correct replicate index
+                nth_replicate = replicate_index[i]
+
+                # if it's the first replicate of a polymer AND it's not the first datasheet being assessed, append old polymer info to df and reset
+                if (nth_replicate == 1 and (i != 0)):
+
+                    # concatenate the current_polymer_df_list into the current polymer_df
+                    current_polymer_df = pd.concat(current_polymer_df_list)
+
+                    # append the current polymer df to the global list_of_clean_dfs as a tuple with the polymer name
+                    list_of_clean_dfs.append((current_polymer_name, current_polymer_df))
+
+                    # reset the current_polymer_df_list to empty so that the next polymer can be appended to it
+                    current_polymer_df_list = []
+
+
+                # update current polymer name, if it's the first replicate
+                if nth_replicate == 1:
+                    current_polymer_name = current_sheet
+
+                # Now that we know it's not a Complete sheet, and have ensured values have been reset as required, enter current sheet
+
+                # use np.where to get sheet sub-table coordinates, and infer the table bounds from its surroundings
+                sub_table_indicator = 'Range'
+
+                # assigns coordinates of all upper left 'Range' cells to an index (row) array and a column numerical index
+                table_indices, table_columns = np.where(current_sheet_df == sub_table_indicator)
+
+                # determine the number of experimental rows in each NMR results sub-table
+                # minus 1 to exclude Range cell row itself
+                num_experimental_indices = np.unique(table_indices)[2] - np.unique(table_indices)[1] - 1
+
+                # minus 2 to account for an empty row and the indices of the next column, as Range is the defining word
+                num_experimental_cols = np.unique(table_columns)[1] - np.unique(table_columns)[0] - 2
+
+                # initialize/reset current_exp_df, current is for CURRENT sub-tables being looped over
+                current_exp_df = []
+
+                # make a list of coordinate pair tuples for this sheet using list comprehension
+                sheet_coords_list = [(table_indices[i], table_columns[i]) for i in range(len(table_indices))]
+
+                coordinate_0 = sheet_coords_list[0]
+
+                i = 1
+                track = 1
+
+                ranges = []
+
+                while ".." in current_sheet_df.iloc[(coordinate_0[0] + i), coordinate_0[1]]:
+
+                    ranges.append(current_sheet_df.iloc[(coordinate_0[0] + i), coordinate_0[1]])
+
+                    i += 1
+                    track += 1
+
+
+
+                for coord in sheet_coords_list:
+
+                    i = 1
+
+                    new_ranges = []
+
+                    while i < track:
+
+                        new_ranges.append(current_sheet_df.iloc[(coord[0] + i), coord[1]])
+
+                        i += 1
+
+                    if new_ranges != ranges:
+                        raise Exception("Please ensure the ranges are equivalent across all tables")
