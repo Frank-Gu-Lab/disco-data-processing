@@ -64,7 +64,7 @@ clean_batch_list = []
 #Input checking testing grounds:
 #########################################################
 name_checker(list_of_raw_books)
-resonance_checker(list_of_raw_books)
+resonance_and_column_checker(list_of_raw_books)
 #########################################################
 
 # Convert all Excel books in the input folder into tuple key-value pairs that can be indexed

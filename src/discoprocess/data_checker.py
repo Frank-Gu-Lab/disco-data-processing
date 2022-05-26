@@ -51,9 +51,9 @@ def name_checker(list_of_raw_books):
 
     return 1
 
-def resonance_checker(list_of_raw_books):
+def resonance_and_column_checker(list_of_raw_books):
     '''
-    This function checks the on and off resonances in the input tables_
+    This function checks the on and off resonances in the input tables, and also checks to make sure the BSM and CONTROL columns are in the correct places
 
     Input:
         list_of_raw_books - a list of excel books to be checked
@@ -150,6 +150,10 @@ def resonance_checker(list_of_raw_books):
                         if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1])] != "Off" or current_sheet_df.iloc[(sheet_coords_list[i+1][0]) - 1, (sheet_coords_list[i+1][1])] != "Off":
 
                             raise Exception("Please ensure that all even replicates are Off resonance")
+
+                    if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1]) + 1] != "Control" or current_sheet_df.iloc[(sheet_coords_list[i + 1][0]) - 1, (sheet_coords_list[i + 1][1]) + 1] != "BSM":
+
+                        raise Exception("Please ensure Control column on the left and BSM column on the right.")
 
 
                     count += 1
