@@ -63,16 +63,14 @@ clean_batch_list = []
 
 #Input checking testing grounds:
 #########################################################
-
 name_checker(list_of_raw_books)
-
+resonance_checker(list_of_raw_books)
 #########################################################
 
 # Convert all Excel books in the input folder into tuple key-value pairs that can be indexed
 for book in list_of_raw_books:
     #append tuples from the list output of the batch processing function, so that each unique polymer tuple is assigned to the clean_batch_tuple_list
     batch_tuple_list.append([polymer for polymer in batch_to_dataframe(book)])
-
 
 # PERFORM DATA CLEANING ON ALL BOOKS PROCESSED VIA BATCH PROCESSING ----------------
 

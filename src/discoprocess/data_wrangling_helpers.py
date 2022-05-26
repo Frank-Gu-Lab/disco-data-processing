@@ -224,6 +224,8 @@ def wrangle_batch(b, name_sheets, replicate_index):
         # make a list of coordinate pair tuples for this sheet using list comprehension
         sheet_coords_list = [(table_indices[i], table_columns[i]) for i in range(len(table_indices))]
 
+        #print("\n\n\n", sheet_coords_list, "\n\n\n")
+
         # iterate through coordinates
         for coords in sheet_coords_list:
 
