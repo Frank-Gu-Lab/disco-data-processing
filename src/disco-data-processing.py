@@ -35,6 +35,7 @@ idx = pd.IndexSlice
 from discoprocess.data_wrangling_functions import *
 from discoprocess.data_merging import merge, etl_per_replicate, etl_per_sat_time, etl_per_proton
 from discoprocess.data_analyze import *
+from discoprocess.data_checker import *
 
 # ESTABLISH LOCAL DIRECTORY PATHS ---------------------
 
@@ -59,6 +60,13 @@ batch_tuple_list = []
 
 clean_batch_tuple_list = []
 clean_batch_list = []
+
+#Input checking testing grounds:
+#########################################################
+
+name_checker(list_of_raw_books)
+
+#########################################################
 
 # Convert all Excel books in the input folder into tuple key-value pairs that can be indexed
 for book in list_of_raw_books:
