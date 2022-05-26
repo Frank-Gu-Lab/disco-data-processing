@@ -52,6 +52,16 @@ def name_checker(list_of_raw_books):
     return 1
 
 def resonance_checker(list_of_raw_books):
+    '''
+    This function checks the on and off resonances in the input tables_
+
+    Input:
+        list_of_raw_books - a list of excel books to be checked
+
+    Output:
+        Nothing if all clear, an error message if a check raises a flags
+
+    '''
 
     for b in list_of_raw_books:
 
