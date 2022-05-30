@@ -16,6 +16,7 @@ from discoprocess.data_plot import generate_buildup_curve
 from discoprocess.data_plot import generate_fingerprint
 from discoprocess.data_plot_helpers import tukey_fence
 
+
 # for only the peaks with a significant disco effect
 polymer_library_binding = set(glob.glob("../data/output/merged/stats_analysis_output_mean_*")) - set(glob.glob("../data/output/merged/stats_analysis_output_mean_all_*"))
 
