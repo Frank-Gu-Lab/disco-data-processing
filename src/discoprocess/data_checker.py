@@ -40,12 +40,15 @@ def name_checker(list_of_raw_books):
             list_of_name_parts = name.split("_")
 
             if list_of_name_parts[1][-1] != 'k':
+                print(name, "Please check this polymer!")
                 raise Exception("Please add a 'k' to the end of the molecular weight (for kilodaltons) for each polymer name")
                 return 0
             if list_of_name_parts[2][-2:] != 'uM':
+                print(name, "Please check this polymer!")
                 raise Exception("Please add 'uM' to the end of the concentration in the polymer name")
                 return 0
             if len(list_of_name_parts) != 3:
+                print(name, "Please check this polymer!")
                 raise Exception("Please format the name in the form: CMC_90k_20uM")
                 return 0
 
@@ -136,6 +139,7 @@ def resonance_and_column_checker(list_of_raw_books):
                 count = 0
 
                 if len(sheet_coords_list) % 4 != 0 and len(sheet_coords_list) >= 4:
+                    print(current_polymer_name, "Please check this sheet!")
                     raise Exception("Please ensure the last table is on the off resonance and the first is on the on resonance.")
 
                 for i in range(0, len(sheet_coords_list), 2):
@@ -143,16 +147,17 @@ def resonance_and_column_checker(list_of_raw_books):
                     if count % 2 == 0:
 
                         if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1])] != "On" or current_sheet_df.iloc[(sheet_coords_list[i+1][0]) - 1, (sheet_coords_list[i+1][1])] != "On":
+                            print(current_polymer_name, "Please check this sheet!")
                             raise Exception("Please ensure that all odd replicates are On resonance")
 
                     else:
 
                         if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1])] != "Off" or current_sheet_df.iloc[(sheet_coords_list[i+1][0]) - 1, (sheet_coords_list[i+1][1])] != "Off":
-
+                            print(current_polymer_name, "Please check this sheet!")
                             raise Exception("Please ensure that all even replicates are Off resonance")
 
                     if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1]) + 1] != "Control" or current_sheet_df.iloc[(sheet_coords_list[i + 1][0]) - 1, (sheet_coords_list[i + 1][1]) + 1] != "BSM":
-
+                        print(current_polymer_name, "Please check this sheet!")
                         raise Exception("Please ensure Control column on the left and BSM column on the right.")
 
 
@@ -269,4 +274,5 @@ def range_checker(list_of_raw_books):
                         i += 1
 
                     if new_ranges != ranges:
+                        print(current_polymer_name, "Please check this sheet!")
                         raise Exception("Please ensure the ranges are equivalent across all tables")
