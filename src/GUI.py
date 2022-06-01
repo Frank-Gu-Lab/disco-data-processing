@@ -88,3 +88,27 @@ if i == 5:
     sht.make_archive(os.path.abspath('../data/output/' + global_output_directory_1), 'zip', '../data/output/',os.path.abspath(global_output_directory))
     with open('../data/output/' + global_output_directory_1 + '.zip', 'rb') as f:
        st.download_button('Download Zip with Analyzed Data', f, file_name=global_output_directory_1+'.zip')
+       i += 1
+
+if i == 6:
+    # makes a global ouput directory for merged data if not existing
+    merge_output_directory = "{}/merged".format(global_output_directory)
+
+    if not os.path.exists(merge_output_directory):
+        os.makedirs(merge_output_directory)
+    # define data source path and data destination path to pass to data merging function
+    source_path = '{}/*/tables_*'.format(global_output_directory)
+    destination_path = '{}'.format(merge_output_directory)
+
+    replicate_summary_df = etl_per_replicate(source_path, destination_path)
+    rep_sum = replicate_summary_df.to_excel(os.path.join(merge_output_directory, "merged_binding_dataset.xlsx"))
+
+    quality_check_df = etl_per_sat_time(source_path, destination_path)
+    qual_check = quality_check_df.to_excel(os.path.join(merge_output_directory, "merged_fit_quality_dataset.xlsx"))
+
+    proton_summary_df = etl_per_proton(quality_check_df)
+    prot_sum = proton_summary_df.to_excel(os.path.join(merge_output_directory, "proton_binding_dataset.xlsx"))
+
+    sht.make_archive(os.path.abspath(merge_output_directory), "zip", global_output_directory, os.path.abspath(merge_output_directory))
+    with open(merge_output_directory + ".zip", "rb") as f:
+        st.download_button("Press to download merged datesets", f, file_name = merge_output_directory + ".zip")
