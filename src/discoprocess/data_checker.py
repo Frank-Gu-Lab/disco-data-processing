@@ -1,5 +1,6 @@
 # define functions used in data cleaning
 import pandas as pd
+import streamlit as st
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -17,7 +18,7 @@ except:
     from .data_wrangling_helpers import *
     from .data_plot import *
 
-def name_checker(list_of_raw_books):
+def name_checker(list_of_raw_books, streamlit = False):
     '''
         This function checks to ensure that the polymer naming is consistent across input files and returns a descriptive error
         message for inconsistent naming
@@ -41,20 +42,32 @@ def name_checker(list_of_raw_books):
 
             if list_of_name_parts[1][-1] != 'k':
                 print(name, "Please check this polymer!")
+                if streamlit:
+                    st.text(name, "Please check this polymer!")
+                    e = RuntimeError("Please add a 'k' to the end of the molecular weight (for kilodaltons) for each polymer name")
+                    st.exception(e)
                 raise Exception("Please add a 'k' to the end of the molecular weight (for kilodaltons) for each polymer name")
                 return 0
             if list_of_name_parts[2][-2:] != 'uM':
                 print(name, "Please check this polymer!")
+                if streamlit:
+                    st.text(name, "Please check this polymer!")
+                    e = RuntimeError("Please add 'uM' to the end of the concentration in the polymer name")
+                    st.exception(e)
                 raise Exception("Please add 'uM' to the end of the concentration in the polymer name")
                 return 0
             if len(list_of_name_parts) != 3:
                 print(name, "Please check this polymer!")
+                if streamlit:
+                    st.text(name, "Please check this polymer!")
+                    e = RuntimeError("Please format the name in the form: CMC_90k_20uM")
+                    st.exception(e)
                 raise Exception("Please format the name in the form: CMC_90k_20uM")
                 return 0
 
-    return 1
+    return True
 
-def resonance_and_column_checker(list_of_raw_books):
+def resonance_and_column_checker(list_of_raw_books, streamlit = False):
     '''
     This function checks the on and off resonances in the input tables, and also checks to make sure the BSM and CONTROL columns are in the correct places
 
@@ -140,6 +153,12 @@ def resonance_and_column_checker(list_of_raw_books):
 
                 if len(sheet_coords_list) % 4 != 0 and len(sheet_coords_list) >= 4:
                     print(current_polymer_name, "Please check this sheet!")
+
+                    if streamlit:
+                        st.text(current_polymer_name, "Please check this polymer!")
+                        e = RuntimeError("Please ensure the last table is on the off resonance and the first is on the on resonance.")
+                        st.exception(e)
+
                     raise Exception("Please ensure the last table is on the off resonance and the first is on the on resonance.")
 
                 for i in range(0, len(sheet_coords_list), 2):
@@ -148,22 +167,36 @@ def resonance_and_column_checker(list_of_raw_books):
 
                         if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1])] != "On" or current_sheet_df.iloc[(sheet_coords_list[i+1][0]) - 1, (sheet_coords_list[i+1][1])] != "On":
                             print(current_polymer_name, "Please check this sheet!")
+                            if streamlit:
+                                st.text(current_polymer_name, "Please check this polymer!")
+                                e = RuntimeError("Please ensure that all odd replicates are On resonance")
+                                st.exception(e)
+
                             raise Exception("Please ensure that all odd replicates are On resonance")
 
                     else:
 
                         if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1])] != "Off" or current_sheet_df.iloc[(sheet_coords_list[i+1][0]) - 1, (sheet_coords_list[i+1][1])] != "Off":
                             print(current_polymer_name, "Please check this sheet!")
+                            if streamlit:
+                                st.text(current_polymer_name, "Please check this polymer!")
+                                e = RuntimeError("Please ensure that all even replicates are Off resonance")
+                                st.exception(e)
                             raise Exception("Please ensure that all even replicates are Off resonance")
 
                     if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1]) + 1] != "Control" or current_sheet_df.iloc[(sheet_coords_list[i + 1][0]) - 1, (sheet_coords_list[i + 1][1]) + 1] != "BSM":
                         print(current_polymer_name, "Please check this sheet!")
+                        if streamlit:
+                            st.text(current_polymer_name, "Please check this polymer!")
+                            e = RuntimeError("Please ensure Control column on the left and BSM column on the right.")
+                            st.exception(e)
                         raise Exception("Please ensure Control column on the left and BSM column on the right.")
 
 
                     count += 1
+    return True
 
-def range_checker(list_of_raw_books):
+def range_checker(list_of_raw_books, streamlit = False):
     '''
     Checks to make sure the ranges are the same for all tables in the excel files
 
@@ -275,4 +308,11 @@ def range_checker(list_of_raw_books):
 
                     if new_ranges != ranges:
                         print(current_polymer_name, "Please check this sheet!")
+                        if streamlit:
+                            st.text(current_polymer_name, "Please check this polymer!")
+                            e = RuntimeError("Please ensure the ranges are equivalent across all tables")
+                            st.exception(e)
                         raise Exception("Please ensure the ranges are equivalent across all tables")
+
+
+    return True
