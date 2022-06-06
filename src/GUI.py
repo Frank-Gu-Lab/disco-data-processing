@@ -42,8 +42,12 @@ if global_output_directory_1 != None and global_output_directory_1 != "":
 
 i = 0
 
-if len(list_of_raw_books) > 0:
+
+@st.cache(suppress_st_warning = True)
+def analysis(list_of_raw_books):
     st.info("Checking names of polymers in datasets for correct formatting")
+
+    i = 0
 
     if name_checker(list_of_raw_books, streamlit = True):
         st.success("Names are formatted correctly!")
@@ -61,14 +65,11 @@ if len(list_of_raw_books) > 0:
         st.info("Great! Now it is time for data analysis!")
         i += 1
 
-batch_tuple_list = []
+    batch_tuple_list = []
 
-clean_batch_tuple_list = []
-clean_batch_list = []
+    clean_batch_tuple_list = []
+    clean_batch_list = []
 
-
-if i == 4:
-    # Convert all Excel books in the input folder into tuple key-value pairs that can be indexed
     for book in list_of_raw_books:
         #append tuples from the list output of the batch processing function, so that each unique polymer tuple is assigned to the clean_batch_tuple_list
         batch_tuple_list.append([polymer for polymer in batch_to_dataframe(book)])
@@ -87,8 +88,16 @@ if i == 4:
 
     if len(clean_batch_tuple_list) != 0:
         with st.spinner("Analyzing data..."):
-            i += analyze_data(clean_batch_tuple_list, global_output_directory, streamlit = True)
-    ######################################################
+            analyze_data(clean_batch_tuple_list, global_output_directory, streamlit = True)
+            i += 1
+
+    if i == 5:
+        return
+
+if len(list_of_raw_books) > 0:
+    analysis(list_of_raw_books)
+    i += 5
+
 
 if i == 5:
     st.success("All polymers successfully analyzed")
@@ -275,7 +284,6 @@ if i == 10:
 
 if i == 11:
     options  = st.multiselect("Buildup curves and fingerprints available, for which polymer would you like to see these plots?", unique_bind_polymers)
-    print(options)
 
     if len(options) > 0:
         for option in options:
@@ -286,8 +294,8 @@ if i == 11:
                 if option in curve:
                     fingerprint_address = curve
 
-            build_image = Image.open(build_address)
-            fingerprint_image = Image.open(fingerprint_address)
+        build_image = Image.open(build_address)
+        fingerprint_image = Image.open(fingerprint_address)
 
-            st.image(build_image)
-            st.image(fingerprint_image)
+        st.image(fingerprint_image, use_column_width = True)
+        st.image(build_image, use_column_width = True)
