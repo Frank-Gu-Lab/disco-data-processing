@@ -1,5 +1,4 @@
 import os
-import streamlit as st
 
 try: # if packages are installed
     from .data_wrangling_functions import *
@@ -119,7 +118,7 @@ def modeling_data(current_df_attenuation, current_df_title, output_directory, ou
 
     return current_df_mean, current_df_replicates
 
-def analyze_data(tuple_list, global_output_directory, streamlit = False):
+def analyze_data(tuple_list, global_output_directory):
         """This function outlines the full data visualization and modeling processing for a list of dataframes.
 
         Parameters
@@ -167,6 +166,3 @@ def analyze_data(tuple_list, global_output_directory, streamlit = False):
             current_df_mean, current_df_replicates = modeling_data(current_df_attenuation, current_df_title, output_directory, output_directory_curve, output_directory_tables)
 
             print("All activities are now completed for: {}".format(current_df_title))
-
-        if streamlit:
-            return 1

@@ -49,15 +49,15 @@ def analysis(list_of_raw_books):
 
     i = 0
 
-    if name_checker(list_of_raw_books, streamlit = True):
+    if name_checker(list_of_raw_books):
         st.success("Names are formatted correctly!")
         i += 1
 
-    if resonance_and_column_checker(list_of_raw_books, streamlit = True):
+    if resonance_and_column_checker(list_of_raw_books):
         st.success("Data formatted correctly!")
         i += 1
 
-    if range_checker(list_of_raw_books, streamlit = True):
+    if range_checker(list_of_raw_books):
         st.success("Data ranges are all correct!")
         i += 1
 
@@ -88,7 +88,7 @@ def analysis(list_of_raw_books):
 
     if len(clean_batch_tuple_list) != 0:
         with st.spinner("Analyzing data..."):
-            analyze_data(clean_batch_tuple_list, global_output_directory, streamlit = True)
+            analyze_data(clean_batch_tuple_list, global_output_directory)
             i += 1
 
     if i == 5:
@@ -283,19 +283,18 @@ if i == 10:
         i += 1
 
 if i == 11:
-    options  = st.multiselect("Buildup curves and fingerprints available, for which polymer would you like to see these plots?", unique_bind_polymers)
+    st.info("The following polymers exhibit binding, please select from the list to view plots!")
+    option  = st.radio("Buildup curves and fingerprints available, for which polymer would you like to see these plots?", unique_bind_polymers)
 
-    if len(options) > 0:
-        for option in options:
-            for curve in list_of_buildup_curves:
-                if option in curve:
-                    build_address = curve
-            for curve in list_of_fingerprints:
-                if option in curve:
-                    fingerprint_address = curve
+    for curve in list_of_buildup_curves:
+        if option in curve:
+            build_address = curve
+    for curve in list_of_fingerprints:
+        if option in curve:
+            fingerprint_address = curve
 
-        build_image = Image.open(build_address)
-        fingerprint_image = Image.open(fingerprint_address)
+    build_image = Image.open(build_address)
+    fingerprint_image = Image.open(fingerprint_address)
 
-        st.image(fingerprint_image, use_column_width = True)
-        st.image(build_image, use_column_width = True)
+    st.image(fingerprint_image, use_column_width = True)
+    st.image(build_image, use_column_width = True)
