@@ -24,6 +24,8 @@ from discoprocess.data_plot import generate_buildup_curve
 from discoprocess.data_plot import generate_fingerprint
 from discoprocess.data_plot_helpers import tukey_fence
 
+from PIL import Image
+
 st.header("Welcome to the DISCO Data Processing Interactive GUI")
 
 st.info("To begin your DISCO data processing, please enter a directory below where output files may be stored")
@@ -249,3 +251,43 @@ if i == 9:
     sht.make_archive(os.path.abspath(output_directory), "zip", global_output_directory, os.path.abspath(output_directory))
     with open(output_directory + ".zip", "rb") as f:
         st.download_button("Press to download figures", f, file_name = "publications"+ ".zip")
+        i += 1
+
+
+#Well sailors, it be Monday...
+list_of_buildup_curves = []
+list_of_fingerprints = []
+list_of_curves = []
+
+if i == 10:
+
+    list_of_curves = glob.glob(binding_directory + "/*")
+
+    if len(list_of_curves) > 0:
+        for curve in list_of_curves:
+            if "fingerprint" in curve:
+                list_of_fingerprints.append(curve)
+            else:
+                list_of_buildup_curves.append(curve)
+
+    if len(list_of_fingerprints) > 0 and len(list_of_buildup_curves) > 0:
+        i += 1
+
+if i == 11:
+    options  = st.multiselect("Buildup curves and fingerprints available, for which polymer would you like to see these plots?", unique_bind_polymers)
+    print(options)
+
+    if len(options) > 0:
+        for option in options:
+            for curve in list_of_buildup_curves:
+                if option in curve:
+                    build_address = curve
+            for curve in list_of_fingerprints:
+                if option in curve:
+                    fingerprint_address = curve
+
+            build_image = Image.open(build_address)
+            fingerprint_image = Image.open(fingerprint_address)
+
+            st.image(build_image)
+            st.image(fingerprint_image)
