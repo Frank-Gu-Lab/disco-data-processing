@@ -141,7 +141,7 @@ def resonance_and_column_checker(list_of_raw_books):
                 if len(sheet_coords_list) % 4 != 0 and len(sheet_coords_list) >= 4:
                     print(current_polymer_name, "Please check this sheet!")
 
-                    raise Exception("Please ensure the last table is on the off resonance and the first is on the on resonance.")
+                    raise Exception("Please ensure the last table is on the off resonance and the first is on the on resonance and the range keyword is only used for relevant data tables in " + current_polymer_name)
 
                 for i in range(0, len(sheet_coords_list), 2):
 
