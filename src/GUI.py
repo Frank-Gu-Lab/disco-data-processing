@@ -118,7 +118,7 @@ if i == 6:
 
     list_of_merging_stuff = glob.glob(source_path + "/*")
 
-    if len(list_of_merging_stuff) > 0:
+    try:
 
         replicate_summary_df = etl_per_replicate(source_path, destination_path)
         rep_sum = replicate_summary_df.to_excel(os.path.join(merge_output_directory, "merged_binding_dataset.xlsx"))
@@ -133,8 +133,8 @@ if i == 6:
         with open(merge_output_directory + ".zip", "rb") as f:
             st.download_button("Press to download merged datesets", f, file_name = "merged" + ".zip")
             i = i + 1
-    else:
-        st.info("There were no binding polymers, please rerun with a new dataset to try other samples! (simply upload more to begin the procecss)")
+    except ValueError:
+        st.info("There were no binding polymers, please rerun with a new dataset to try other samples! (simply upload more to begin the process)")
 
 
 if i == 7:
