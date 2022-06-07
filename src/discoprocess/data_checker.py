@@ -141,7 +141,7 @@ def resonance_and_column_checker(list_of_raw_books):
                 if len(sheet_coords_list) % 4 != 0 and len(sheet_coords_list) >= 4:
                     print(current_polymer_name, "Please check this sheet!")
 
-                    raise Exception("Please ensure the last table is on the off resonance and the first is on the on resonance and the range keyword is only used for relevant data tables in " + current_polymer_name)
+                    raise Exception("In the excel book " + current_book_title +  " please ensure the last table is on the off resonance and the first is on the on resonance and the range keyword is only used for relevant data tables in sheet " + current_polymer_name)
 
                 for i in range(0, len(sheet_coords_list), 2):
 
@@ -150,17 +150,17 @@ def resonance_and_column_checker(list_of_raw_books):
                         if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1])] != "On" or current_sheet_df.iloc[(sheet_coords_list[i+1][0]) - 1, (sheet_coords_list[i+1][1])] != "On":
                             print(current_polymer_name, "Please check this sheet!")
 
-                            raise Exception("Please ensure that all odd replicates are On resonance and Range keyword is only used in tables meant for data analysis in " + current_polymer_name)
+                            raise Exception("In the excel book " + current_book_title +  " please ensure that all odd replicates are On resonance and Range keyword is only used in tables meant for data analysis in sheet " + current_polymer_name)
 
                     else:
 
                         if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1])] != "Off" or current_sheet_df.iloc[(sheet_coords_list[i+1][0]) - 1, (sheet_coords_list[i+1][1])] != "Off":
                             print(current_polymer_name, "Please check this sheet!")
-                            raise Exception("Please ensure that all even replicates are Off resonance and Range keyword is only used in tables meant for data analysis in " + current_polymer_name)
+                            raise Exception("In the excel book " + current_book_title +  " please ensure that all even replicates are Off resonance and Range keyword is only used in tables meant for data analysis in sheet " + current_polymer_name)
 
                     if current_sheet_df.iloc[(sheet_coords_list[i][0]) - 1, (sheet_coords_list[i][1]) + 1] != "Control" or current_sheet_df.iloc[(sheet_coords_list[i + 1][0]) - 1, (sheet_coords_list[i + 1][1]) + 1] != "BSM":
                         print(current_polymer_name, "Please check this sheet!")
-                        raise Exception("Please ensure Control column on the left and BSM column on the right in " + current_polymer_name)
+                        raise Exception("In the excel book " + current_book_title +  " please ensure Control column on the left and BSM column on the right in sheet" + current_polymer_name)
 
 
                     count += 1
@@ -278,7 +278,7 @@ def range_checker(list_of_raw_books):
 
                     if new_ranges != ranges:
                         print(current_polymer_name, "Please check this sheet!")
-                        raise Exception("Please ensure the ranges are equivalent across all tables in " + current_polymer_name)
+                        raise Exception("In the excel book " + current_book_title +  " please ensure the ranges are equivalent across all tables in sheet " + current_polymer_name)
 
 
     return True
