@@ -116,19 +116,25 @@ if i == 6:
     source_path = '{}/*/tables_*'.format(global_output_directory)
     destination_path = '{}'.format(merge_output_directory)
 
-    replicate_summary_df = etl_per_replicate(source_path, destination_path)
-    rep_sum = replicate_summary_df.to_excel(os.path.join(merge_output_directory, "merged_binding_dataset.xlsx"))
+    list_of_merging_stuff = glob.glob(source_path + "/*")
 
-    quality_check_df = etl_per_sat_time(source_path, destination_path)
-    qual_check = quality_check_df.to_excel(os.path.join(merge_output_directory, "merged_fit_quality_dataset.xlsx"))
+    if len(list_of_merging_stuff) > 0:
 
-    proton_summary_df = etl_per_proton(quality_check_df)
-    prot_sum = proton_summary_df.to_excel(os.path.join(merge_output_directory, "proton_binding_dataset.xlsx"))
+        replicate_summary_df = etl_per_replicate(source_path, destination_path)
+        rep_sum = replicate_summary_df.to_excel(os.path.join(merge_output_directory, "merged_binding_dataset.xlsx"))
 
-    sht.make_archive(os.path.abspath(merge_output_directory), "zip", global_output_directory, os.path.abspath(merge_output_directory))
-    with open(merge_output_directory + ".zip", "rb") as f:
-        st.download_button("Press to download merged datesets", f, file_name = "merged" + ".zip")
-        i = i + 1
+        quality_check_df = etl_per_sat_time(source_path, destination_path)
+        qual_check = quality_check_df.to_excel(os.path.join(merge_output_directory, "merged_fit_quality_dataset.xlsx"))
+
+        proton_summary_df = etl_per_proton(quality_check_df)
+        prot_sum = proton_summary_df.to_excel(os.path.join(merge_output_directory, "proton_binding_dataset.xlsx"))
+
+        sht.make_archive(os.path.abspath(merge_output_directory), "zip", global_output_directory, os.path.abspath(merge_output_directory))
+        with open(merge_output_directory + ".zip", "rb") as f:
+            st.download_button("Press to download merged datesets", f, file_name = "merged" + ".zip")
+            i = i + 1
+    else:
+        st.info("There were no binding polymers, please rerun with a new dataset to try other samples! (simply upload more to begin the procecss)")
 
 
 if i == 7:
