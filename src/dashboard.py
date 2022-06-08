@@ -93,6 +93,37 @@ def analysis(list_of_raw_books):
     if i == 5:
         return
 
+def grab_polymer_name(full_filepath, common_filepath):
+    '''Grabs the polymer name from file path.
+
+    Parameters:
+    -----------
+    full_filepath: string
+        path to the datasheet for that polymer
+
+    common_filepath: string
+        portion of the filepath that is shared between all polymer inputs, excluding their custom names
+
+    Returns:
+    -------
+    polymer_name: string
+        the custom portion of the filepath with the polymer name and any other custom info
+    '''
+
+    #Necessary for some windows operating systems
+    for char in full_filepath:
+        if char == "\\":
+            full_filepath = full_filepath.replace("\\", "/")
+
+    for char in common_filepath:
+        if char == "\\":
+            common_filepath = full_filepath.replace("\\", "/")
+
+    polymer_name = full_filepath.split(common_filepath)[1]
+    polymer_name = polymer_name[:-5] # remove the .xlsx
+
+    return polymer_name
+
 if len(global_output_directory_1) > 0:
 
     choice = st.radio("Would you like to upload data for data analysis, or plot data from the directory specified?", ["Upload and analyze", "Plot existing data"])
