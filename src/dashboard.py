@@ -197,15 +197,24 @@ elif choice == "Plot existing data":
         list_of_polymers = []
 
         with st.spinner("Establishing directories for supporting figures"):
-            # for only the peaks with a significant disco effect
-            polymer_library_binding = set(glob.glob(merge_output_directory + "/stats_analysis_output_mean_*")) - set(glob.glob(merge_output_directory + "/stats_analysis_output_mean_all_*"))
+
+            try:
+                # for only the peaks with a significant disco effect
+                polymer_library_binding = set(glob.glob(merge_output_directory + "/stats_analysis_output_mean_*")) - set(glob.glob(merge_output_directory + "/stats_analysis_output_mean_all_*"))
+            except FileNotFoundError:
+                st.warning("No polymers exhibit binding, would you care to continue?")
 
             # significant and zero peaks
             polymer_library_all = glob.glob(merge_output_directory + "/stats_analysis_output_mean_all_*")
 
             polymer_library_replicates = glob.glob(merge_output_directory + "/stats_analysis_output_replicate_*")
 
-            merged_bind_dataset = pd.read_excel(merge_output_directory + "/merged_binding_dataset.xlsx")
+            try:
+
+                merged_bind_dataset = pd.read_excel(merge_output_directory + "/merged_binding_dataset.xlsx")
+            except FileNotFoundError:
+                st.warning("If not, please rerun with a different polymer selection by clicking the analysis radio button.")
+
 
             # Define a custom output directory for formal figures
 
