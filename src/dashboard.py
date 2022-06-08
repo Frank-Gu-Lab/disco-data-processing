@@ -36,8 +36,24 @@ st.set_page_config(page_title = "DISCO Data Processing")
 
 st.title("Welcome to the DISCO Data Processing Interactive GUI")
 
+
 st.sidebar.markdown("## To begin your DISCO data processing, please enter a directory below where output files may be stored")
 global_output_directory_1 = st.sidebar.text_input("Directory: ")
+
+merge_output_directory = ""
+
+if global_output_directory_1 != None and global_output_directory_1 != "":
+    global_output_directory = "../data/output/" + global_output_directory_1
+    if not os.path.exists(global_output_directory):
+        os.makedirs(global_output_directory)
+    # makes a global ouput directory for merged data if not existing
+    merge_output_directory = "{}/merged".format(global_output_directory)
+
+    if not os.path.exists(merge_output_directory):
+        os.makedirs(merge_output_directory)
+    # define data source path and data destination path to pass to data merging function
+    source_path = '{}/*/tables_*'.format(global_output_directory)
+    destination_path = '{}'.format(merge_output_directory)
 
 list_of_raw_books = []
 
@@ -129,12 +145,9 @@ if len(global_output_directory_1) > 0:
     choice = st.radio("Would you like to upload data for data analysis, or plot data from the directory specified?", ["Upload and analyze", "Plot existing data"])
 
 if choice == "Upload and analyze":
-    if global_output_directory_1 != None and global_output_directory_1 != "":
-        global_output_directory = "../data/output/" + global_output_directory_1
-        if not os.path.exists(global_output_directory):
-            os.makedirs(global_output_directory)
-        st.info("Please upload your data files to begin data processing!")
-        list_of_raw_books = st.sidebar.file_uploader("Please provide input files", accept_multiple_files = True)
+
+    st.info("Please upload your data files to begin data processing!")
+    list_of_raw_books = st.sidebar.file_uploader("Please provide input files", accept_multiple_files = True)
 
     i = 0
 
@@ -152,16 +165,6 @@ if choice == "Upload and analyze":
            i += 1
 
     if i == 6:
-        # makes a global ouput directory for merged data if not existing
-        merge_output_directory = "{}/merged".format(global_output_directory)
-
-        if not os.path.exists(merge_output_directory):
-            os.makedirs(merge_output_directory)
-        # define data source path and data destination path to pass to data merging function
-        source_path = '{}/*/tables_*'.format(global_output_directory)
-        destination_path = '{}'.format(merge_output_directory)
-
-        list_of_merging_stuff = glob.glob(source_path + "/*")
 
         try:
 
@@ -180,7 +183,40 @@ if choice == "Upload and analyze":
                 i = i + 1
         except ValueError:
             st.info("There were no binding polymers, please rerun with a new dataset to try other samples! (simply upload more to begin the process)")
+
     if i == 7:
         st.info("Data analysis is complete.  If you would like to plot figures, please select the radio button above.")
-else:
-    pass
+elif choice == "Plot existing data":
+
+    try:
+        i = 0
+
+        st.info("Preparing supporting figures.")
+
+        with st.spinner("Establishing directories for supporting figures"):
+            # for only the peaks with a significant disco effect
+            polymer_library_binding = set(glob.glob(merge_output_directory + "/stats_analysis_output_mean_*")) - set(glob.glob(merge_output_directory + "/stats_analysis_output_mean_all_*"))
+
+            # significant and zero peaks
+            polymer_library_all = glob.glob(merge_output_directory + "/stats_analysis_output_mean_all_*")
+
+            polymer_library_replicates = glob.glob(merge_output_directory + "/stats_analysis_output_replicate_*")
+
+            merged_bind_dataset = pd.read_excel(merge_output_directory + "/merged_binding_dataset.xlsx")
+
+            # Define a custom output directory for formal figures
+
+            output_directory = '{}/publications'.format(global_output_directory)
+
+            if not os.path.exists(output_directory):
+                os.makedirs(output_directory)
+            i += 1
+
+        if i == 1:
+            st.success("Directories established, preparing buildup curves.")
+
+            for polymer in polymer_library_all:
+                st.info(polymer)
+
+    except FileNotFoundError:
+        st.warning("You do not have any datafiles to graph!")
