@@ -198,23 +198,15 @@ elif choice == "Plot existing data":
 
         with st.spinner("Establishing directories for supporting figures"):
 
-            try:
-                # for only the peaks with a significant disco effect
-                polymer_library_binding = set(glob.glob(merge_output_directory + "/stats_analysis_output_mean_*")) - set(glob.glob(merge_output_directory + "/stats_analysis_output_mean_all_*"))
-            except FileNotFoundError:
-                st.warning("No polymers exhibit binding, would you care to continue?")
+            # for only the peaks with a significant disco effect
+            polymer_library_binding = set(glob.glob(merge_output_directory + "/stats_analysis_output_mean_*")) - set(glob.glob(merge_output_directory + "/stats_analysis_output_mean_all_*"))
 
             # significant and zero peaks
             polymer_library_all = glob.glob(merge_output_directory + "/stats_analysis_output_mean_all_*")
 
             polymer_library_replicates = glob.glob(merge_output_directory + "/stats_analysis_output_replicate_*")
 
-            try:
-
-                merged_bind_dataset = pd.read_excel(merge_output_directory + "/merged_binding_dataset.xlsx")
-            except FileNotFoundError:
-                st.warning("If not, please rerun with a different polymer selection by clicking the analysis radio button.")
-
+            polymber_replicate_libary_binding = set(glob.glob(merge_output_directory + "/stats_analysis_output_replicate_*")) - set(glob.glob(merge_output_directory + ".stats_analysis_output_replicate_all_*"))
 
             # Define a custom output directory for formal figures
 
@@ -222,15 +214,135 @@ elif choice == "Plot existing data":
 
             if not os.path.exists(output_directory):
                 os.makedirs(output_directory)
+
+            binding_directory2 = f"{output_directory}/all_peaks"
+
+            if not os.path.exists(binding_directory2):
+                os.makedirs(binding_directory2)
+
+            if len(polymer_library_all) > 0:
+                for polymer in polymer_library_all:
+
+                    polymer_name = grab_polymer_name(full_filepath=polymer,
+                                                     common_filepath= merge_output_directory + "/stats_analysis_output_mean_all_")
+
+                    # read polymer datasheet
+                    polymer_df = pd.read_excel(polymer, index_col=[0, 1, 2, 3], header=[0, 1])
+
+                    generate_buildup_curve(polymer_df, polymer_name, binding_directory2)
             i += 1
 
         if i == 1:
-            st.success("Directories established, preparing buildup curves.")
 
             for polymer in polymer_library_all:
                 list_of_polymers.append(grab_polymer_name(polymer, common_filepath = merge_output_directory + "/stats_analysis_output_mean_all_"))
 
-            print(list_of_polymers)
+            mean_all_list = []
+            mean_bindonly_list = []
+            replicate_all_list = []
+            replicate_bindonly_list = []
+
+            non_binding = []
+
+            with st.spinner("Buildup curves being generated"):
+                # plot DISCO Effect build up curves with only significant peaks
+                for polymer in list_of_polymers:
+
+                    mean_all = pd.read_excel(merge_output_directory + "/stats_analysis_output_mean_all_" + polymer+ ".xlsx", index_col=[0, 1, 2, 3], header=[0, 1]).reset_index()
+                    mean_all_list.append(mean_all)
+
+                    try:
+                        mean_bindonly = pd.read_excel(merge_output_directory + "/stats_analysis_output_mean_" + polymer + ".xlsx", index_col=[0, 1, 2, 3], header=[0, 1]).reset_index()
+                        mean_bindonly_list.append(mean_bindonly)
+                    except FileNotFoundError:
+                        print("No binding polymers detected")
+
+                    replicate_all = pd.read_excel(merge_output_directory + "/stats_analysis_output_replicate_all_" + polymer + ".xlsx", index_col=[0], header=[0]).reset_index(drop=True)
+                    replicate_all_list.append(replicate_all)
+
+                    try:
+                        replicate_bindonly= pd.read_excel(merge_output_directory + "/stats_analysis_output_replicate_" + polymer + ".xlsx", index_col=[0], header=[0]).reset_index(drop=True)
+                        replicate_bindonly_list.append(replicate_bindonly)
+                    except FileNotFoundError:
+                        non_binding.append(polymer)
+                        print("No binding polymers detected")
+                i += 1
+
+            if i == 2:
+                st.success("Successfully read from merged datasets.")
+
+                st.info("Please select a polymer to plot from the sidebar.")
+
+                poly_choice = st.sidebar.radio("Please select a polymer to plot.", list_of_polymers)
+
+                mosaic = """
+                AA
+                BB
+                """
+
+                gs_kw = dict(width_ratios=[1, 1.5], height_ratios=[1, 1.5])
+
+                fig, axd = plt.subplot_mosaic(mosaic, gridspec_kw=gs_kw, figsize=(3.3, 4), constrained_layout=False, dpi=150)
+
+                isBinding = 0
+
+                with st.spinner("graphing polymers"):
+                    for polymer in bindonly_list:
+                        if poly_choice in polymer:
+                            isBinding += 1
+                            add_buildup_toax(polymer, axd['A'])
+                            axd['A'].set_ylabel("DISCO Effect", fontsize = 6)
+                            axd['A'].set_xlabel("Saturation Time (s)", fontisize = 6)
+                            axd['A'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
+                            axd['A'].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+                            axd['A'].xaxis.set_ticks(np.arange(0.25, 2.0, 0.25))
+                            axd['A'].tick_params(axis = 'x', labelsize = 6)
+                            axd['A'].tick_params(axis = 'y', labelsize = 6)
+
+                    for polymer in replicate_bindonly_list:
+                        if poly_choice in polymer:
+                            isBinding += 1
+                            add_fingerprint_toax(polymer, axd['B'])
+                            axd['B'].set_ylabel("DISCO AFo", fontsize = 6)
+                            axd['B'].set_xlabel("Chemical Shift (Δ ppm)", fontisize = 6)
+                            axd['B'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
+                            axd['B'].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+                            axd['B'].xaxis.set_ticks(np.arange(0.25, 2.0, 0.25))
+                            axd['B'].tick_params(axis = 'x', labelsize = 6)
+                            axd['B'].tick_params(axis = 'y', labelsize = 6)
+
+                    if isBinding >= 2:
+                        props = dict(facecolor = "white", linewidth = 0.5)
+                        legA = axd['A'].legend(loc = 'upper left', title = "Δ ppm", frameon = True, fontsize = 6, fancybox = False)
+                        legA.get_frame().set_edgecolor('k')
+                        legA.get_title().set_fontsize('6')
+                        legA.get_frame().set_linewidth(0.5)
+
+                        output_filename = f"{output_directory}{poly_choice}.png"
+                        plt.tight_layout()
+                        fig.patch.set_facecolor('white')
+                        fig.savefig(output_filename, dpi = 500, transparent = False)
+
+                        st.image(output_filename, use_column_width = True)
+
+                    else if poly_choice in non_binding:
+                        list_of_curves = glob.glob(binding_directory2 + "/*")
+
+                        for curve in list_of_curves:
+                            if poly_choice in curve:
+                                st.image(curve, use_column_width = True)
+
+
+
+
+
+
+
+
+
+
+
+
 
     except FileNotFoundError:
         st.warning("You do not have any datafiles to graph!")
