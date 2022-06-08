@@ -186,12 +186,15 @@ if choice == "Upload and analyze":
 
     if i == 7:
         st.info("Data analysis is complete.  If you would like to plot figures, please select the radio button above.")
+
 elif choice == "Plot existing data":
 
     try:
         i = 0
 
         st.info("Preparing supporting figures.")
+
+        list_of_polymers = []
 
         with st.spinner("Establishing directories for supporting figures"):
             # for only the peaks with a significant disco effect
@@ -216,7 +219,9 @@ elif choice == "Plot existing data":
             st.success("Directories established, preparing buildup curves.")
 
             for polymer in polymer_library_all:
-                st.info(polymer)
+                list_of_polymers.append(grab_polymer_name(polymer, common_filepath = merge_output_directory + "/stats_analysis_output_mean_all_"))
+
+            print(list_of_polymers)
 
     except FileNotFoundError:
         st.warning("You do not have any datafiles to graph!")
