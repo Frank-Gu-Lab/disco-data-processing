@@ -280,6 +280,8 @@ elif choice == "Plot existing data":
                 BB
                 """
 
+                print(poly_choice)
+
                 gs_kw = dict(width_ratios=[1, 1.5], height_ratios=[1, 1.5])
 
                 fig, axd = plt.subplot_mosaic(mosaic, gridspec_kw=gs_kw, figsize=(3.3, 4), constrained_layout=False, dpi=150)
@@ -287,7 +289,7 @@ elif choice == "Plot existing data":
                 isBinding = 0
 
                 with st.spinner("graphing polymers"):
-                    for polymer in bindonly_list:
+                    for polymer in mean_bindonly_list:
                         if poly_choice in polymer:
                             isBinding += 1
                             add_buildup_toax(polymer, axd['A'])
@@ -325,7 +327,7 @@ elif choice == "Plot existing data":
 
                         st.image(output_filename, use_column_width = True)
 
-                    else if poly_choice in non_binding:
+                    elif poly_choice in non_binding:
                         list_of_curves = glob.glob(binding_directory2 + "/*")
 
                         for curve in list_of_curves:
