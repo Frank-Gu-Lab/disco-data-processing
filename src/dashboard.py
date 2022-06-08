@@ -176,9 +176,11 @@ if choice == "Upload and analyze":
 
             sht.make_archive(os.path.abspath(merge_output_directory), "zip", global_output_directory, os.path.abspath(merge_output_directory))
             with open(merge_output_directory + ".zip", "rb") as f:
-                st.download_button("Press to download merged datesets", f, file_name = "merged" + ".zip")
+                st.download_button("Download Zip with Merged Datesets", f, file_name = "merged" + ".zip")
                 i = i + 1
         except ValueError:
             st.info("There were no binding polymers, please rerun with a new dataset to try other samples! (simply upload more to begin the process)")
+    if i == 7:
+        st.info("Data analysis is complete.  If you would like to plot figures, please select the radio button above.")
 else:
     pass

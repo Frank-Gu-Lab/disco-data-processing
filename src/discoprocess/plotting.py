@@ -10,20 +10,6 @@ import numpy as np
 from discoprocess.plotting_helpers import annotate_sig_buildup_points
 from discoprocess.wrangle_data import flatten_multicolumns, calculate_abs_buildup_params
 
-# set default style params
-plt.style.use(['science', 'disco'])
-plt.rcParams.update({'font.family': 'sans-serif'})
-plt.rcParams.update({'font.size': 6})
-
-
-# for use in more specific plotting
-custom_colors = ['#377eb8', '#984ea3', '#ff7f00', '#e41a1c', '#f781bf',
-    '#ffff33', '#4daf4a', '#a65628', '#999999']
-
-# must install LaTex before you can use Science Plots
-os.environ["PATH"] += os.pathsep + '/Library/TeX/texbin'
-
-
 def add_fingerprint_toax(df, ax, **kwargs):
     '''Adds DISCO AF0 fingerprints of all binding protons for one polymer to the plot axis passed.
 
