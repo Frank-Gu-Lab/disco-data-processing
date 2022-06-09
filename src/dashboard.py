@@ -181,8 +181,14 @@ if choice == "Upload and analyze":
             with open(merge_output_directory + ".zip", "rb") as f:
                 st.download_button("Download Zip with Merged Datesets", f, file_name = "merged" + ".zip")
                 i = i + 1
+
+            with st.expander("Open to see Merged Binding Dataset"):
+                st.table(replicate_summary_df)
+            with st.expander("Open to see Merged Fit Quality Dataset"):
+                st.table(quality_check_df)
+
         except ValueError:
-            st.info("There were no binding polymers, please rerun with a new dataset to try other samples! (simply upload more to begin the process)")
+            st.warning("There were no binding polymers, please rerun with a new dataset to try other samples! (simply upload more to begin the process)")
 
     if i == 7:
         st.info("Data analysis is complete.  If you would like to plot figures, please select the radio button above.")
@@ -312,8 +318,8 @@ elif choice == "Plot existing data":
 
                     if isBinding >= 2:
 
-                        props = dict(facecolor = "white", linewidth = 0.3, size = 2)
-                        legA = axd['A'].legend(loc = 'best', title = "Δ ppm")
+                        props = dict(facecolor = "white", linewidth = 0.3)
+                        legA = axd['A'].legend(loc = 'upper left', title = "Δ ppm", prop = {'size':5})
                         legA.get_frame().set_edgecolor('k')
                         legA.get_title().set_fontsize('6')
                         plt.rcParams['legend.fontsize'] = 7
