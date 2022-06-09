@@ -340,15 +340,12 @@ elif choice == "Plot existing data":
                         st.warning("No binding detected for this polymer, displaying the buildup curve only.")
 
                         for tuple in mean_all_list:
-                            if tuple[1] == "poly_choice":
+                            if tuple[1] == poly_choice:
                                 display_frame = tuple[0]
 
                         i += 1
 
-                print(display_frame)
-                st.table(display_frame)
-
-
+                st.table(display_frame.iloc[:, :5])
 
     except FileNotFoundError:
         st.warning("You do not have any datafiles to graph!")
