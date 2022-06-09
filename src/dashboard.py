@@ -249,29 +249,26 @@ elif choice == "Plot existing data":
                 for polymer in list_of_polymers:
 
                     mean_all = pd.read_excel(merge_output_directory + "/stats_analysis_output_mean_all_" + polymer+ ".xlsx", index_col=[0, 1, 2, 3], header=[0, 1]).reset_index()
-                    mean_all_list.append(mean_all)
+                    mean_all_list.append((mean_all, polymer))
 
                     try:
                         mean_bindonly = pd.read_excel(merge_output_directory + "/stats_analysis_output_mean_" + polymer + ".xlsx", index_col=[0, 1, 2, 3], header=[0, 1]).reset_index()
-                        mean_bindonly_list.append(mean_bindonly)
+                        mean_bindonly_list.append((mean_bindonly, polymer))
                     except FileNotFoundError:
-                        print("No binding polymers detected")
+                        pass
 
                     replicate_all = pd.read_excel(merge_output_directory + "/stats_analysis_output_replicate_all_" + polymer + ".xlsx", index_col=[0], header=[0]).reset_index(drop=True)
-                    replicate_all_list.append(replicate_all)
+                    replicate_all_list.append((replicate_all, polymer))
 
                     try:
                         replicate_bindonly= pd.read_excel(merge_output_directory + "/stats_analysis_output_replicate_" + polymer + ".xlsx", index_col=[0], header=[0]).reset_index(drop=True)
-                        replicate_bindonly_list.append(replicate_bindonly)
+                        replicate_bindonly_list.append((replicate_bindonly, polymer))
                     except FileNotFoundError:
                         non_binding.append(polymer)
-                        print("No binding polymers detected")
                 i += 1
 
             if i == 2:
-                st.success("Successfully read from merged datasets.")
-
-                st.info("Please select a polymer to plot from the sidebar.")
+                st.success("Successfully read from plotting data")
 
                 poly_choice = st.sidebar.radio("Please select a polymer to plot.", list_of_polymers)
 
@@ -280,45 +277,47 @@ elif choice == "Plot existing data":
                 BB
                 """
 
-                print(poly_choice)
-
                 gs_kw = dict(width_ratios=[1, 1.5], height_ratios=[1, 1.5])
 
                 fig, axd = plt.subplot_mosaic(mosaic, gridspec_kw=gs_kw, figsize=(3.3, 4), constrained_layout=False, dpi=150)
 
                 isBinding = 0
 
+                display_frame = None
+
                 with st.spinner("graphing polymers"):
-                    for polymer in mean_bindonly_list:
-                        if poly_choice in polymer:
+                    for tuple in mean_bindonly_list:
+                        if poly_choice == tuple[1]:
                             isBinding += 1
-                            add_buildup_toax(polymer, axd['A'])
-                            axd['A'].set_ylabel("DISCO Effect", fontsize = 6)
-                            axd['A'].set_xlabel("Saturation Time (s)", fontisize = 6)
+                            display_frame = tuple[0]
+                            add_buildup_toax(tuple[0], axd['A'])
+                            axd['A'].set_ylabel("DISCO Effect")
+                            axd['A'].set_xlabel("Saturation Time (s)")
                             axd['A'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
                             axd['A'].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
                             axd['A'].xaxis.set_ticks(np.arange(0.25, 2.0, 0.25))
                             axd['A'].tick_params(axis = 'x', labelsize = 6)
                             axd['A'].tick_params(axis = 'y', labelsize = 6)
 
-                    for polymer in replicate_bindonly_list:
-                        if poly_choice in polymer:
+                    for tuple in replicate_bindonly_list:
+                        if poly_choice == tuple[1]:
                             isBinding += 1
-                            add_fingerprint_toax(polymer, axd['B'])
-                            axd['B'].set_ylabel("DISCO AFo", fontsize = 6)
-                            axd['B'].set_xlabel("Chemical Shift (Δ ppm)", fontisize = 6)
+                            add_fingerprint_toax(tuple[0], axd['B'])
+                            axd['B'].set_ylabel("DISCO AFo")
+                            axd['B'].set_xlabel("1H Chemical Shift (Δ ppm)")
                             axd['B'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
-                            axd['B'].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
-                            axd['B'].xaxis.set_ticks(np.arange(0.25, 2.0, 0.25))
+                            axd['B'].yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
                             axd['B'].tick_params(axis = 'x', labelsize = 6)
                             axd['B'].tick_params(axis = 'y', labelsize = 6)
 
                     if isBinding >= 2:
-                        props = dict(facecolor = "white", linewidth = 0.5)
-                        legA = axd['A'].legend(loc = 'upper left', title = "Δ ppm", frameon = True, fontsize = 6, fancybox = False)
+
+                        props = dict(facecolor = "white", linewidth = 0.3, size = 2)
+                        legA = axd['A'].legend(loc = 'best', title = "Δ ppm")
                         legA.get_frame().set_edgecolor('k')
                         legA.get_title().set_fontsize('6')
-                        legA.get_frame().set_linewidth(0.5)
+                        plt.rcParams['legend.fontsize'] = 7
+                        legA.get_frame().set_linewidth(0.3)
 
                         output_filename = f"{output_directory}{poly_choice}.png"
                         plt.tight_layout()
@@ -327,6 +326,10 @@ elif choice == "Plot existing data":
 
                         st.image(output_filename, use_column_width = True)
 
+                        st.success("Binding detected, right click and click save image to begin download.")
+
+                        i += 1
+
                     elif poly_choice in non_binding:
                         list_of_curves = glob.glob(binding_directory2 + "/*")
 
@@ -334,15 +337,16 @@ elif choice == "Plot existing data":
                             if poly_choice in curve:
                                 st.image(curve, use_column_width = True)
 
+                        st.warning("No binding detected for this polymer, displaying the buildup curve only.")
 
+                        for tuple in mean_all_list:
+                            if tuple[1] == "poly_choice":
+                                display_frame = tuple[0]
 
+                        i += 1
 
-
-
-
-
-
-
+                print(display_frame)
+                st.table(display_frame)
 
 
 

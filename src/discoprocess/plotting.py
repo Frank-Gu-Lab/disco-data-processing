@@ -116,7 +116,7 @@ def add_buildup_toax(df, ax):
         ax.plot(sat_time, disco_effect, markeredgecolor='k', markeredgewidth=0.35,
                 marker='o', linestyle='', ms=5, label="%.2f" % ppm)
         ax.fill_between(sat_time, y1, y2, alpha=0.25)
-        ax.legend(loc='lower right', title="Peak ($\delta$, ppm)")
+        ax.legend(loc='best', title="Peak ($\delta$, ppm)")
         ax.axhline(y=0.0, color="0.8", linestyle='dashed')
 
     return
