@@ -404,9 +404,7 @@ elif choice == "Plot existing data":
                             effect_size_df = generate_disco_effect_mean_diff_df(list_of_replicates_for_diff[0][1][0], list_of_replicates_for_diff[0][0][0])
                             subset_sattime_df = generate_subset_sattime_df(effect_size_df, 0.25)
 
-                            ppm_colors = ['#377eb8', '#984ea3', '#ff7f00', '#e41a1c', '#f781bf', '#ffff3', '#4daf4a', '#a65628', '#999999']
-
-                            figure, axy = plt.subplots(1, figsize = (8, 4))
+                            figure, axy = plt.subplots(1, figsize = (7, 2))
 
                             add_difference_plot_transposed(df = subset_sattime_df, ax = axy, dy = 0.3)
 

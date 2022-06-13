@@ -358,7 +358,9 @@ def add_difference_plot_transposed(df, ax, dy, **kwargs):
     ax.scatter(plot_domain, df['effect_size'], s = (40,), alpha=1, label='effect size', marker = 'o', linewidths = 0.35, edgecolors = 'k', zorder = 2)
 
 
-    ax.set_xticks(np.round(df['ppm'].values,2))
+    ax.set_xticks(list(plot_domain))
+
+    ax.set_xticklabels(np.round(df['ppm'].values, 2))
 
     # annotate significance
     df['annotation'] = df['changed_significantly'].map({True: "*", False: ""})
