@@ -31,6 +31,8 @@ from discoprocess.plotting_helpers import assemble_peak_buildup_df
 
 from PIL import Image
 
+import copy as cp
+
 #Setting up some stuff for the page
 st.set_page_config(page_title = "DISCO Data Processing")
 
@@ -109,7 +111,7 @@ def analysis(list_of_raw_books):
     if i == 5:
         return
 
-def grab_polymer_name(full_filepath, common_filepath):
+def grab_polymer_name(full_filepath, common_filepath = " "):
     '''Grabs the polymer name from file path.
 
     Parameters:
@@ -139,6 +141,13 @@ def grab_polymer_name(full_filepath, common_filepath):
     polymer_name = polymer_name[:-5] # remove the .xlsx
 
     return polymer_name
+
+def grab_polymer_weight(polymer_name):
+
+    polymer_name = polymer_name.split("_")
+    polymer_weight = polymer_name[1][:-1]
+
+    return (polymer_name[0], int(polymer_weight))
 
 if len(global_output_directory_1) > 0:
 
@@ -316,6 +325,44 @@ elif choice == "Plot existing data":
                             axd['B'].tick_params(axis = 'x', labelsize = 6)
                             axd['B'].tick_params(axis = 'y', labelsize = 6)
 
+                    list_of_polymer_names = []
+
+                    for polymer in list_of_polymers:
+                        if grab_polymer_name(" " + polymer) not in list_of_polymer_names:
+                            list_of_polymer_names.append(grab_polymer_name(" " + polymer))
+
+                    list_of_polymers_by_weight = []
+
+                    for polymer in list_of_polymer_names:
+                        list_of_polymers_by_weight.append(grab_polymer_weight(polymer))
+
+                    temp = ["a", "b"]
+                    list_of_replicates_for_diff = []
+                    for polymer in list_of_polymers_by_weight:
+                        for polymer2 in list_of_polymers_by_weight:
+                            if polymer[0] == polymer2[0] and polymer[1] != polymer2[1] and polymer[0] not in temp and polymer == grab_polymer_weight(poly_choice):
+                                for tuple in replicate_all_list:
+                                    if polymer[1] > polymer2[1]:
+                                        if polymer[0] in tuple[1] and str(polymer[1]) in tuple[1]:
+                                            temp[0] = tuple
+                                        if polymer2[0] in tuple[1] and str(polymer2[1]) in tuple[1]:
+                                            temp[1] = tuple
+                                    else:
+                                        if polymer[0] in tuple[1] and str(polymer[1]) in tuple[1]:
+                                            temp[1] = tuple
+                                        if polymer2[0] in tuple[1] and str(polymer2[1]) in tuple[1]:
+                                            temp[0] = tuple
+                                condition = 0
+                                for pair in list_of_replicates_for_diff:
+                                    if pair[0][1] != temp[0][1]:
+                                        condition = 1
+                                if condition == 0:
+                                    list_of_replicates_for_diff.append([temp[0], temp[1]])
+
+                    print(list_of_replicates_for_diff)
+
+                    #Now you just gotta graph em!
+
                     if isBinding >= 2:
 
                         props = dict(facecolor = "white", linewidth = 0.3)
@@ -332,7 +379,10 @@ elif choice == "Plot existing data":
 
                         st.image(output_filename, use_column_width = True)
 
+
                         st.success("Binding detected, right click and click save image to begin download.")
+
+
 
                         i += 1
 
@@ -353,5 +403,5 @@ elif choice == "Plot existing data":
 
                 st.table(display_frame.iloc[:, :5])
 
-    except FileNotFoundError:
+    except AttributeError:
         st.warning("You do not have any datafiles to graph!")
