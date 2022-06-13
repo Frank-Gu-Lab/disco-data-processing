@@ -325,44 +325,6 @@ elif choice == "Plot existing data":
                             axd['B'].tick_params(axis = 'x', labelsize = 6)
                             axd['B'].tick_params(axis = 'y', labelsize = 6)
 
-                    list_of_polymer_names = []
-
-                    for polymer in list_of_polymers:
-                        if grab_polymer_name(" " + polymer) not in list_of_polymer_names:
-                            list_of_polymer_names.append(grab_polymer_name(" " + polymer))
-
-                    list_of_polymers_by_weight = []
-
-                    for polymer in list_of_polymer_names:
-                        list_of_polymers_by_weight.append(grab_polymer_weight(polymer))
-
-                    temp = ["a", "b"]
-                    list_of_replicates_for_diff = []
-                    for polymer in list_of_polymers_by_weight:
-                        for polymer2 in list_of_polymers_by_weight:
-                            if polymer[0] == polymer2[0] and polymer[1] != polymer2[1] and polymer[0] not in temp and polymer == grab_polymer_weight(poly_choice):
-                                for tuple in replicate_all_list:
-                                    if polymer[1] > polymer2[1]:
-                                        if polymer[0] in tuple[1] and str(polymer[1]) in tuple[1]:
-                                            temp[0] = tuple
-                                        if polymer2[0] in tuple[1] and str(polymer2[1]) in tuple[1]:
-                                            temp[1] = tuple
-                                    else:
-                                        if polymer[0] in tuple[1] and str(polymer[1]) in tuple[1]:
-                                            temp[1] = tuple
-                                        if polymer2[0] in tuple[1] and str(polymer2[1]) in tuple[1]:
-                                            temp[0] = tuple
-                                condition = 0
-                                for pair in list_of_replicates_for_diff:
-                                    if pair[0][1] != temp[0][1]:
-                                        condition = 1
-                                if condition == 0:
-                                    list_of_replicates_for_diff.append([temp[0], temp[1]])
-
-                    print(list_of_replicates_for_diff)
-
-                    #Now you just gotta graph em!
-
                     if isBinding >= 2:
 
                         props = dict(facecolor = "white", linewidth = 0.3)
@@ -401,7 +363,72 @@ elif choice == "Plot existing data":
 
                         i += 1
 
-                st.table(display_frame.iloc[:, :5])
+                    if i >= 3:
+
+                        list_of_polymer_names = []
+
+                        for polymer in list_of_polymers:
+                            if grab_polymer_name(" " + polymer) not in list_of_polymer_names:
+                                list_of_polymer_names.append(grab_polymer_name(" " + polymer))
+
+                        list_of_polymers_by_weight = []
+
+                        for polymer in list_of_polymer_names:
+                            list_of_polymers_by_weight.append(grab_polymer_weight(polymer))
+
+                        temp = ["a", "b"]
+                        list_of_replicates_for_diff = []
+                        for polymer in list_of_polymers_by_weight:
+                            for polymer2 in list_of_polymers_by_weight:
+                                if polymer[0] == polymer2[0] and polymer[1] != polymer2[1] and polymer[0] not in temp and polymer == grab_polymer_weight(poly_choice):
+                                    for tuple in replicate_all_list:
+                                        if polymer[1] > polymer2[1]:
+                                            if polymer[0] in tuple[1] and str(polymer[1]) in tuple[1]:
+                                                temp[0] = tuple
+                                            if polymer2[0] in tuple[1] and str(polymer2[1]) in tuple[1]:
+                                                temp[1] = tuple
+                                        else:
+                                            if polymer[0] in tuple[1] and str(polymer[1]) in tuple[1]:
+                                                temp[1] = tuple
+                                            if polymer2[0] in tuple[1] and str(polymer2[1]) in tuple[1]:
+                                                temp[0] = tuple
+                                    condition = 0
+                                    for pair in list_of_replicates_for_diff:
+                                        if pair[0][1] != temp[0][1]:
+                                            condition = 1
+                                    if condition == 0:
+                                        list_of_replicates_for_diff.append([temp[0], temp[1]])
+
+                        if len(list_of_replicates_for_diff) > 0:
+
+                            effect_size_df = generate_disco_effect_mean_diff_df(list_of_replicates_for_diff[0][1][0], list_of_replicates_for_diff[0][0][0])
+                            subset_sattime_df = generate_subset_sattime_df(effect_size_df, 0.25)
+
+                            ppm_colors = ['#377eb8', '#984ea3', '#ff7f00', '#e41a1c', '#f781bf', '#ffff3', '#4daf4a', '#a65628', '#999999']
+
+                            figure, axy = plt.subplots(1, figsize = (8, 4))
+
+                            add_difference_plot_transposed(df = subset_sattime_df, ax = axy, dy = 0.3)
+
+                            axy.set_ylabel(list_of_replicates_for_diff[0][1][1], fontsize = 8)
+                            axy.set_ylim(-3, 2.5)
+                            axy.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+                            axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 6)
+                            axy.tick_params(axis = 'x', labelsize = 6)
+                            axy.tick_params(axis = 'y', labelsize = 6)
+
+                            t = axy.text(0, 0, "Standardized Effect Size \n(Hedges G, t=0.25s)", ha="center", va="center", rotation=90, fontsize =6)
+
+                            output_filename_2 = f"{output_directory}/" + list_of_replicates_for_diff[0][1][1] + "_diff" + ".png"
+                            figure.patch.set_facecolor("white")
+                            plt.tight_layout(pad = -0.75)
+                            figure.savefig(output_filename_2, dpi = 500, transparent = False)
+
+                            st.image(output_filename_2, use_column_width = True)
+
+                    #Now you just gotta graph em!
+
+                    st.table(display_frame.iloc[:, :5])
 
     except AttributeError:
         st.warning("You do not have any datafiles to graph!")

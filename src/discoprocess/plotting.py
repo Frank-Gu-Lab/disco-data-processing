@@ -345,8 +345,6 @@ def add_difference_plot_transposed(df, ax, dy, **kwargs):
     >>> plt.show()
     '''
 
-    custom_colors = kwargs.pop("custom_colors")
-
     plot_domain = range(1, df.shape[0]+1)
 
     # zero line
@@ -357,9 +355,10 @@ def add_difference_plot_transposed(df, ax, dy, **kwargs):
               ymax=df['effect_sem_upper'], color='black', linewidth=2, zorder = 1)
 
     # data
-    ax.scatter(plot_domain, df['effect_size'], s = (40,), color=custom_colors[:df.shape[0]],
-               alpha=1, label='effect size', marker = 'o', linewidths = 0.35, edgecolors = 'k', zorder = 2)
-    ax.set_xticks(plot_domain, np.round(df['ppm'].values,2))
+    ax.scatter(plot_domain, df['effect_size'], s = (40,), alpha=1, label='effect size', marker = 'o', linewidths = 0.35, edgecolors = 'k', zorder = 2)
+
+
+    ax.set_xticks(np.round(df['ppm'].values,2))
 
     # annotate significance
     df['annotation'] = df['changed_significantly'].map({True: "*", False: ""})
