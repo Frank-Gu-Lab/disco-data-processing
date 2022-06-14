@@ -32,7 +32,7 @@ class TestChecks:
                 with pytest.raises(Exception) as e:
                     resonance_and_column_checker(list_of_raw_books)
 
-                assert e.match("Please ensure that all odd replicates are On resonance")
+                assert e.match("In the excel book Batch-CMC_90k_20uM.xlsx please ensure that all odd replicates are On resonance and Range keyword is only used in tables meant for data analysis in sheet CMC_90k_20uM \(1\)")
 
     def test_range_checker(self):
 
@@ -43,4 +43,4 @@ class TestChecks:
         with pytest.raises(Exception) as e:
             range_checker(list_of_raw_books)
 
-        assert e.match("Please ensure the ranges are equivalent across all tables")
+        assert e.match("In the excel book Batch-PEG_2k_20uM.xlsx please ensure the ranges are equivalent across all tables in sheet PEG_2k_20uM \(1\)")
