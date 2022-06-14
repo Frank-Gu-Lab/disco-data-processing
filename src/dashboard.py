@@ -33,7 +33,7 @@ from PIL import Image
 
 import copy as cp
 
-#Setting up some stuff for the pagg
+#Setting up some stuff for the page
 st.set_page_config(page_title = "DISCO Data Processing")
 
 st.title("Welcome to the DISCO Data Processing Interactive GUI")
@@ -151,7 +151,7 @@ def grab_polymer_weight(polymer_name):
 
 if len(global_output_directory_1) > 0:
 
-    choice = "Upload and analyze"
+    choice = st.radio("Would you like to upload data for data analysis, or plot data from the directory specified?", ["Upload and analyze", "Plot existing data"])
 
 if choice == "Upload and analyze":
 
@@ -202,16 +202,10 @@ if choice == "Upload and analyze":
     if i == 7:
         st.info("Data analysis is complete.  If you would like to plot figures, please select the radio button above.")
 
-        if st.sidebar.button("Plot Datasets"):
-            choice = "Plot existing data"
-        else:
-            pass
-
 elif choice == "Plot existing data":
 
     try:
         i = 0
-
 
         st.info("Preparing supporting figures.")
 
@@ -293,9 +287,6 @@ elif choice == "Plot existing data":
 
                 poly_choice = st.sidebar.radio("Please select a polymer to plot.", list_of_polymers)
 
-                if st.sidebar.button("Return to data analysis/uploading (lose current datasets)"):
-                    choice = "Upload and analyze"
-
                 mosaic = """
                 AA
                 BB
@@ -343,7 +334,7 @@ elif choice == "Plot existing data":
                         plt.rcParams['legend.fontsize'] = 7
                         legA.get_frame().set_linewidth(0.3)
 
-                        output_filename = f"{output_directory}/{poly_choice}.png"
+                        output_filename = f"{output_directory}{poly_choice}.png"
                         plt.tight_layout()
                         fig.patch.set_facecolor('white')
                         fig.savefig(output_filename, dpi = 500, transparent = False)
@@ -413,20 +404,22 @@ elif choice == "Plot existing data":
                             effect_size_df = generate_disco_effect_mean_diff_df(list_of_replicates_for_diff[0][1][0], list_of_replicates_for_diff[0][0][0])
                             subset_sattime_df = generate_subset_sattime_df(effect_size_df, 0.25)
 
-                            figure, axy = plt.subplots(1, figsize = (16, 7))
+                            figure, axy = plt.subplots(1, figsize = (7, 2))
 
                             add_difference_plot_transposed(df = subset_sattime_df, ax = axy, dy = 0.3)
 
-                            axy.set_ylabel(list_of_replicates_for_diff[0][1][1] + " - Standardized Effect Size(Hedges G, t=0.25s)", fontsize = 12)
+                            axy.set_ylabel(list_of_replicates_for_diff[0][1][1], fontsize = 8)
                             axy.set_ylim(-3, 2.5)
                             axy.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
-                            axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 12)
-                            axy.tick_params(axis = 'x', labelsize = 12)
-                            axy.tick_params(axis = 'y', labelsize = 12)
+                            axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 6)
+                            axy.tick_params(axis = 'x', labelsize = 6)
+                            axy.tick_params(axis = 'y', labelsize = 6)
+
+                            t = axy.text(0, 0, "Standardized Effect Size \n(Hedges G, t=0.25s)", ha="center", va="center", rotation=90, fontsize =6)
 
                             output_filename_2 = f"{output_directory}/" + list_of_replicates_for_diff[0][1][1] + "_diff" + ".png"
                             figure.patch.set_facecolor("white")
-                            plt.tight_layout(pad = 2)
+                            plt.tight_layout(pad = -0.75)
                             figure.savefig(output_filename_2, dpi = 500, transparent = False)
 
                             st.image(output_filename_2, use_column_width = True)
