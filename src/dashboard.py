@@ -151,7 +151,8 @@ def grab_polymer_weight(polymer_name):
 
 if len(global_output_directory_1) > 0:
 
-    choice = st.radio("Would you like to upload data for data analysis, or plot data from the directory specified?", ["Upload and analyze", "Plot existing data"])
+
+    choice = st.radio("Would you like to upload data for data analysis, or plot data from the directory specified?", ["Upload and analyze", "Plot existing data and view plotting options"])
 
 if choice == "Upload and analyze":
 
