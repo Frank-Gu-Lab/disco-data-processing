@@ -245,6 +245,7 @@ def generate_disco_effect_mean_diff_df(replicate_df_low, replicate_df_high):
     '''
 
     # take absolute values of everything
+
     grouped_low = replicate_df_low.groupby(
         by=["sat_time", "proton_peak_index"])
     grouped_high = replicate_df_high.groupby(

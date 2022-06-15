@@ -140,12 +140,39 @@ def test_barlett():
 
 def test_change_significance():
 
-    pass
+    replicate_df_low = pd.read_excel(input_path + "/stats_analysis_output_replicate_all_" + "CMC_90k_20uM" + ".xlsx", index_col=[0], header=[0]).reset_index(drop=True)
+
+    replicate_df_high = pd.read_excel(input_path + "/stats_analysis_output_replicate_all_" + "CMC_131k_20uM" + ".xlsx", index_col=[0], header=[0]).reset_index(drop=True)
+
+    grouped_low = replicate_df_low.groupby(
+        by=["sat_time", "proton_peak_index"])
+    grouped_high = replicate_df_high.groupby(
+        by=["sat_time", "proton_peak_index"])
+
+    actual = change_significance(group_1=grouped_low, group_2=grouped_high)
+
+    expected = pd.read_pickle(input_path + "/change_sig.pkl")
+
+    pd.testing.assert_frame_equal(actual, expected)
 
 def test_generate_subset_sattime_df():
 
-    pass
+    effect_size_df = pd.read_pickle(input_path + "/change_sig.pkl")
+
+    actual = generate_subset_sattime_df(effect_size_df, 0.25)
+
+    expected  = pd.read_pickle(input_path + "/gen_sat.pkl")
+
+    pd.testing.assert_frame_equal(actual, expected)
 
 def test_generate_disco_effect_mean_diff_df():
 
-    pass
+    x =  pd.read_excel(input_path + "/stats_analysis_output_replicate_all_" + "CMC_90k_20uM" + ".xlsx", index_col=[0], header=[0]).reset_index(drop=True)
+
+    y =  pd.read_excel(input_path + "/stats_analysis_output_replicate_all_" + "CMC_131k_20uM" + ".xlsx", index_col=[0], header=[0]).reset_index(drop=True)
+
+    actual = generate_disco_effect_mean_diff_df(x, y)
+
+    expected = pd.read_pickle(input_path + "/gen_dic_eff.pkl")
+
+    pd.testing.assert_frame_equal(actual, expected)
