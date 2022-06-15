@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Helper functions used to simplify code for visualization of results. 
+Helper functions used to simplify code for visualization of results.
 """
 import pandas as pd
 import numpy as np
@@ -28,14 +28,14 @@ def grab_peak_subset_data(df, ppi):
     return subset_df
 
 def grab_disco_effect_data(subset_df):
-    '''Grabs basic statistical summary of each disco effect(t) 
+    '''Grabs basic statistical summary of each disco effect(t)
     datapoint for a given peak in a given polymer.
 
     Parameters:
     -----------
     subset_df: Pandas.Dataframe
         subset_df comes is the desired peak subset of the replicate all raw data for one polymer
-    
+
     Returns:
     --------
     grouped_df: pandas.DataFrame
@@ -43,12 +43,12 @@ def grab_disco_effect_data(subset_df):
 
     mean_disco: pd.Series
         mean disco effect value for the given peak at all sat times
-    
+
     std_disco: pd.Series
         std dev disco effect value for the given peak at all sat times
-    
+
     n: int
-        number of replicates associated with statistical summary 
+        number of replicates associated with statistical summary
     '''
 
     grouped_df = subset_df.groupby(by=['sat_time', 'proton_peak_index']).mean()
@@ -59,7 +59,7 @@ def grab_disco_effect_data(subset_df):
     return grouped_df, mean_disco, std_disco, n
 
 def assemble_peak_buildup_df(df, ppi):
-    '''Assembles a directly indexable dataframe of individual proton Disco Effect(t) data, 
+    '''Assembles a directly indexable dataframe of individual proton Disco Effect(t) data,
     that can be used to plot an individual peak buildup curve for the desired proton.
 
     Parameters:
@@ -69,7 +69,7 @@ def assemble_peak_buildup_df(df, ppi):
 
     ppi: int
         proton peak index of the desired polymer proton for the buildup curve
-    
+
     Returns:
     --------
     plot_df: pandas.DataFrame
@@ -80,7 +80,7 @@ def assemble_peak_buildup_df(df, ppi):
     subset_df = grab_peak_subset_data(df, ppi)
 
     # manipulate raw data and reassemble into a flat single column index plot df
-    grouped_df, _, std_disco, n = grab_disco_effect_data(subset_df)
+    grouped_df, mean_disco, std_disco, n = grab_disco_effect_data(subset_df)
     plot_df = grouped_df.copy()
     plot_df = plot_df.rename(columns={"corr_%_attenuation": "corr_%_attenuation_mean"})
     plot_df['corr_%_attenuation_std'] = std_disco
@@ -93,8 +93,8 @@ def assemble_peak_buildup_df(df, ppi):
 # ANNOTATION FUNCTIONS
 def annotate_sig_buildup_points(ax, significance, sat_time, disco_effect, dx, dy, color):
     '''Adds markers to the buildup curve plot provided for by ax where points are flagged as
-    statistically significant in the passed "significance" series. 
-    
+    statistically significant in the passed "significance" series.
+
     Parameters:
     ----------
     ax: matplotlib plot axis
@@ -103,20 +103,20 @@ def annotate_sig_buildup_points(ax, significance, sat_time, disco_effect, dx, dy
     significance: pd.Series or array-like
         iterable the length of the plot domain containing boolean flags for domain indices that should
         or should not be annotated as significant
-    
+
     sat_time: np.array
         plot domain values
 
     disco_effect: np.array
         plot range values
-    
+
     dx: float
         amount to shift the annotation marker away from datapoint on x axis
 
     dy: float:
         amount to shift the annotation marker away from datapoint on y axis
 
-    color: string 
+    color: string
         color-code or other matplotlib compatible signifier of marker colour
 
     Returns:
@@ -132,4 +132,3 @@ def annotate_sig_buildup_points(ax, significance, sat_time, disco_effect, dx, dy
             sat_time[ix]+dx, disco_effect[ix]+dy), c=color)
 
     return
-
