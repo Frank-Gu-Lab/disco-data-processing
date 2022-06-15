@@ -6,6 +6,10 @@ import glob
 import shutil
 import matplotlib.pyplot as plt
 
+import pandas as pd
+import numpy as np
+import seaborn as sns
+
 # appending path to access sibling directory - uncomment if local package setup doesn't work
 sys.path.append(os.getcwd() + '/../src')
 

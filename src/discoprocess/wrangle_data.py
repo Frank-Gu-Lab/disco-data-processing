@@ -4,7 +4,7 @@ Data processing scripts involved in preprocessing, transforming, and statistical
 """
 
 import numpy as np
-import pandas as pd 
+import pandas as pd
 import scipy.stats as stats
 from scipy.stats import t
 import pingouin as pg
@@ -20,7 +20,7 @@ def flatten_multicolumns(mean_df):
     colnames[4] = "corr_%_attenuation_mean"
     colnames[5] = "corr_%_attenuation_std"
     mean_df.columns = colnames
-    
+
     return mean_df
 
 # CALCULATE DISCO EFFECT PARAMS
@@ -43,7 +43,7 @@ def calculate_abs_buildup_params(df):
         disco effect for the buildup curve
 
     y1: array-like
-        standard error lower bound 
+        standard error lower bound
 
     y2: array-like
         standard error upper bound
@@ -80,7 +80,7 @@ def calculate_buildup_params(df):
         disco effect for the buildup curve
 
     y1: array-like
-        standard error lower bound 
+        standard error lower bound
 
     y2: array-like
         standard error upper bound
@@ -103,7 +103,7 @@ def shapiro_wilk(effect):
     '''
     H0: the data is normally distributed
     H1: the data is not normally distributed
-    
+
     Therefore, if p > 0.05 we fail to reject the null hypothesis'''
 
     stat, p = stats.shapiro(effect)
@@ -114,9 +114,9 @@ def bartlett(effect1, effect2):
     '''After testing that p(shapiro wilk) > 0.05 for both effect1 and effect2, use Bartlett's test to
     examine the equal variance assumption.
 
-    H0: the data is of equal variance 
+    H0: the data is of equal variance
     H1: the data is not of equal variance
-    
+
     Therefore, if p > 0.05 we fail to reject the null hypothesis
     '''
 
@@ -124,8 +124,8 @@ def bartlett(effect1, effect2):
 
     return p
 
-def test_change_significance(group_1, group_2, alt_hyp="two-sided"):
-    '''Defaults to two sided test, can change to 'greater'  
+def change_significance(group_1, group_2, alt_hyp="two-sided"):
+    '''Defaults to two sided test, can change to 'greater'
     for seeing if effect is larger in group 2 than group 1.
     or 'less' for vice versa.
 
@@ -173,13 +173,13 @@ def test_change_significance(group_1, group_2, alt_hyp="two-sided"):
                 disco_2_mean = np.mean(disco_2)
                 v2 = np.var(disco_2, ddof = 1)
                 n2 = len(disco_2)
-                
+
                 delta_disco = disco_2_mean - disco_1_mean
                 pooled_se = np.sqrt(v1 / n1 + v2 / n2)
                 dof = (v1 / n1 + v2 / n2)**2 / (v1**2 / (n1**2 * (n1 - 1)) + v2**2 / (n2**2 * (n2 - 1)))
-                
+
                 # upper and lower bounds 95 CI
-                delta_CI_lower = delta_disco - t.ppf(0.95, dof)*pooled_se 
+                delta_CI_lower = delta_disco - t.ppf(0.95, dof)*pooled_se
                 delta_CI_upper = delta_disco + t.ppf(0.95, dof)*pooled_se
 
                 if float(p_result) <= 0.05:
@@ -191,10 +191,10 @@ def test_change_significance(group_1, group_2, alt_hyp="two-sided"):
 
                 # calc effect size
                 hedges_g = pg.compute_effsize(disco_2, disco_1, paired=False, eftype="hedges")
-                
+
                 # calc effect size sem for error bars
                 # see pingouin docs for formula https://pingouin-stats.org/generated/pingouin.compute_esci.html
-                effect_se = np.sqrt(((n1+n2) / (n1*n2)) + ((hedges_g**2) / (2*(n1+n2)))) 
+                effect_se = np.sqrt(((n1+n2) / (n1*n2)) + ((hedges_g**2) / (2*(n1+n2))))
 
                 # write results to output
                 current_dict = {"sat_time": first_ix[0],
@@ -233,14 +233,14 @@ def generate_disco_effect_mean_diff_df(replicate_df_low, replicate_df_high):
     '''Take raw dfs from input file and generate dfs
     contining information about the change in disco effect (mean difference) between them.
     Effect size (hedge's g), effect significance with 95% CI.
-    
+
     Notes:
     ------
     Must be dfs from two identical polymers with the same peaks. I.e.
     low mW and high mW. Note that the convention for ordering matters.
 
     In all calculation cases, order is [high df - low df], as is low df is the control
-    and high df is the treatment. High df is the df with the property being 
+    and high df is the treatment. High df is the df with the property being
     increased, i.e. increased mW or % hydrolysis.
     '''
 
@@ -251,7 +251,6 @@ def generate_disco_effect_mean_diff_df(replicate_df_low, replicate_df_high):
         by=["sat_time", "proton_peak_index"])
 
     # perform t test per peak per sat time to see if sig change w increased property
-    effect_size_df = test_change_significance(group_1=grouped_low, group_2=grouped_high)
+    effect_size_df = change_significance(group_1=grouped_low, group_2=grouped_high)
 
     return effect_size_df
-
