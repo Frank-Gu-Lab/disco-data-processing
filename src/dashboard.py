@@ -409,7 +409,7 @@ elif choice == "Plot existing data and view plotting options":
 
                             add_difference_plot_transposed(df = subset_sattime_df, ax = axy, dy = 0.3)
 
-                            axy.set_ylabel(list_of_replicates_for_diff[0][1][1] + " Standardized Effect Size \n(Hedges G, t=0.25s)", fontsize = 8)
+                            axy.set_ylabel(" Standardized Effect Size \n(Hedges G, t=0.25s)", fontsize = 8)
                             axy.set_ylim(-3, 2.5)
                             axy.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
                             axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 6)
