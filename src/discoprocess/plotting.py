@@ -266,7 +266,6 @@ def add_difference_plot(df, ax, dy, **kwargs):
     >>> add_difference_plot(df=hpc_subset_sattime_df, dy= 0.010,  ax=ax, **kwargs)
     >>> plt.show()
     '''
-    custom_colors = kwargs.pop("custom_colors")
 
     plot_range = range(1, (df.shape[0])+1)
 
@@ -278,7 +277,7 @@ def add_difference_plot(df, ax, dy, **kwargs):
               xmax=df['effect_sem_upper'], color='black', linewidth=2, zorder=1)
 
     # data
-    ax.scatter(df['effect_size'], plot_range, s=(40,), color=custom_colors[:df.shape[0]],
+    ax.scatter(df['effect_size'], plot_range, s=(40),
                alpha=1, label='Effect Size', marker='o', linewidths=0.35, edgecolors='k', zorder = 2)
     ax.set_yticks(plot_range, np.round(df['ppm'].values, 2))
 
