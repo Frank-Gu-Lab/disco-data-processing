@@ -441,7 +441,13 @@ elif choice == "Plot existing data and view plotting options":
 
                         #Now you just gotta graph em!
 
-                    st.table(display_frame.iloc[:, :5])
+                    with st.expander("Open to see AFo Summary for Fingerprint"):
+                        st.table(display_frame)
+                    with open(merge_output_directory + ".zip", "rb") as f:
+                        st.download_button("Download Zip with Merged Datesets", f, file_name = "merged" + ".zip")
+                    with open('../data/output/' + global_output_directory_1 + '.zip', 'rb') as f:
+                       st.download_button('Download Zip with Analyzed Data', f, file_name=global_output_directory_1+'.zip')
 
-    except NameError:
+
+    except AttributeError:
         st.warning("You do not have any datafiles to graph!")
