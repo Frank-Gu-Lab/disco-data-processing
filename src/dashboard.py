@@ -152,7 +152,7 @@ def grab_polymer_weight(polymer_name):
 if len(global_output_directory_1) > 0:
 
 
-    choice = st.radio("Would you like to upload data for data analysis, or plot data from the directory specified?", ["Upload and analyze", "Plot existing data and view plotting options"])
+    choice = st.sidebar.radio("Would you like to upload data for data analysis, or plot data from the directory specified?", ["Upload and analyze", "Plot existing data and view plotting options"])
 
 if choice == "Upload and analyze":
 
@@ -377,56 +377,71 @@ elif choice == "Plot existing data and view plotting options":
                         for polymer in list_of_polymer_names:
                             list_of_polymers_by_weight.append(grab_polymer_weight(polymer))
 
-                        temp = ["a", "b"]
-                        list_of_replicates_for_diff = []
+                        print(list_of_polymers_by_weight)
+
+                        possible_weights = []
+
                         for polymer in list_of_polymers_by_weight:
-                            for polymer2 in list_of_polymers_by_weight:
-                                if polymer[0] == polymer2[0] and polymer[1] != polymer2[1] and polymer[0] not in temp and polymer == grab_polymer_weight(poly_choice):
-                                    for tuple in replicate_all_list:
-                                        if polymer[1] > polymer2[1]:
-                                            if polymer[0] in tuple[1] and str(polymer[1]) in tuple[1]:
-                                                temp[0] = tuple
-                                            if polymer2[0] in tuple[1] and str(polymer2[1]) in tuple[1]:
-                                                temp[1] = tuple
-                                        else:
-                                            if polymer[0] in tuple[1] and str(polymer[1]) in tuple[1]:
-                                                temp[1] = tuple
-                                            if polymer2[0] in tuple[1] and str(polymer2[1]) in tuple[1]:
-                                                temp[0] = tuple
-                                    condition = 0
-                                    for pair in list_of_replicates_for_diff:
-                                        if pair[0][1] != temp[0][1]:
-                                            condition = 1
-                                    if condition == 0:
-                                        list_of_replicates_for_diff.append([temp[0], temp[1]])
-
-                        if len(list_of_replicates_for_diff) > 0:
-
-                            effect_size_df = generate_disco_effect_mean_diff_df(list_of_replicates_for_diff[0][1][0], list_of_replicates_for_diff[0][0][0])
-                            subset_sattime_df = generate_subset_sattime_df(effect_size_df, 0.25)
-
-                            figure, axy = plt.subplots(1, figsize = (16, 5))
-
-                            add_difference_plot_transposed(df = subset_sattime_df, ax = axy, dy = 0.3)
-
-                            axy.set_ylabel(" Standardized Effect Size \n(Hedges G, t=0.25s)", fontsize = 8)
-                            axy.set_ylim(-3, 2.5)
-                            axy.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
-                            axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 6)
-                            axy.tick_params(axis = 'x', labelsize = 6)
-                            axy.tick_params(axis = 'y', labelsize = 6)
+                            if polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] != grab_polymer_weight(poly_choice)[1]:
+                                possible_weights.append(polymer[1])
 
 
-                            output_filename_2 = f"{output_directory}/" + list_of_replicates_for_diff[0][1][1] + "_diff" + ".png"
-                            figure.patch.set_facecolor("white")
-                            plt.tight_layout(pad = 1)
-                            figure.savefig(output_filename_2, dpi = 500, transparent = False)
+                        weight_choice = st.radio("Please choose the molecular weight to compare with", possible_weights)
 
-                            st.image(output_filename_2, use_column_width = True)
+                        if len(possible_weights) > 0:
 
-                    #Now you just gotta graph em!
+                            temp = ["a", "b"]
+                            list_of_replicates_for_diff = []
+                            for polymer in list_of_polymers_by_weight:
+                                for polymer2 in list_of_polymers_by_weight:
+                                    if polymer[0] == polymer2[0] and polymer[1] != polymer2[1] and polymer[0] == grab_polymer_weight(poly_choice)[0] and polymer[1] == grab_polymer_weight(poly_choice)[1] and polymer2[1] == weight_choice:
+
+                                        for tuple in replicate_all_list:
+                                            if polymer[1] > polymer2[1]:
+                                                if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
+                                                    temp[0] = tuple
+                                                if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1]:
+                                                    temp[1] = tuple
+                                            else:
+                                                if polymer[0] in tuple[1] and str(polymer[1]) + "k" in tuple[1]:
+                                                    temp[1] = tuple
+                                                if polymer2[0] in tuple[1] and str(polymer2[1]) + "k" in tuple[1]:
+                                                    temp[0] = tuple
+                                        condition = 0
+                                        for pair in list_of_replicates_for_diff:
+                                            if pair[0][1] != temp[0][1]:
+                                                condition = 1
+                                        if condition == 0:
+                                            list_of_replicates_for_diff.append([temp[0], temp[1]])
+
+                            if len(list_of_replicates_for_diff) > 0:
+
+                                effect_size_df = generate_disco_effect_mean_diff_df(list_of_replicates_for_diff[0][1][0], list_of_replicates_for_diff[0][0][0])
+                                subset_sattime_df = generate_subset_sattime_df(effect_size_df, 0.25)
+
+                                figure, axy = plt.subplots(1, figsize = (16, 5))
+
+                                add_difference_plot_transposed(df = subset_sattime_df, ax = axy, dy = 0.3)
+
+                                axy.set_ylabel(" Standardized Effect Size \n(Hedges G, t=0.25s)", fontsize = 8)
+                                axy.set_ylim(-3, 2.5)
+                                axy.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+                                axy.set_xlabel("1H Chemical Shift (Δ ppm)", fontsize = 6)
+                                axy.tick_params(axis = 'x', labelsize = 6)
+                                axy.tick_params(axis = 'y', labelsize = 6)
+                                plt.title(list_of_replicates_for_diff[0][1][1] + " vs " + list_of_replicates_for_diff[0][0][1])
+
+
+                                output_filename_2 = f"{output_directory}/" + list_of_replicates_for_diff[0][1][1] + "_diff" + ".png"
+                                figure.patch.set_facecolor("white")
+                                plt.tight_layout(pad = 1)
+                                figure.savefig(output_filename_2, dpi = 500, transparent = False)
+
+                                st.image(output_filename_2, use_column_width = True)
+
+                        #Now you just gotta graph em!
 
                     st.table(display_frame.iloc[:, :5])
 
-    except AttributeError:
+    except NameError:
         st.warning("You do not have any datafiles to graph!")
