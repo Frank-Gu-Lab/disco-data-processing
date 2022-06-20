@@ -23,6 +23,8 @@ from discoprocess.wrangle_data import flatten_multicolumns, calculate_abs_buildu
 from discoprocess.plotting import *
 from discoprocess.wrangle_data import *
 
+from discoprocess.plotting_helpers import assemble_peak_buildup_df
+
 from matplotlib.testing.compare import compare_images
 
 # global testing directories
@@ -181,3 +183,38 @@ def test_add_difference_plot():
         figure.patch.set_facecolor("white")
         plt.tight_layout(pad = 1)
         figure.savefig(output_filename_2, dpi = 500, transparent = False)
+
+
+def test_add_overlaid_buildup_toax_customlabels():
+
+    with assert_plot_added():
+
+        df_list = []
+
+        figure2, axywo = plt.subplots(1, figsize = (16, 5))
+
+        x =  pd.read_excel(input_path + "/stats_analysis_output_replicate_all_" + "CMC_90k_20uM" + ".xlsx", index_col=[0], header=[0]).reset_index(drop=True)
+
+        y =  pd.read_excel(input_path + "/stats_analysis_output_replicate_all_" + "CMC_131k_20uM" + ".xlsx", index_col=[0], header=[0]).reset_index(drop=True)
+
+        ppi_1_low = assemble_peak_buildup_df(x, 2)
+        ppi_1_high = assemble_peak_buildup_df(y, 2)
+
+        cmc_effect_size_df = generate_disco_effect_mean_diff_df(x, y)
+
+        kwargs = {"labels": ["90", "131"],
+            "dx": 0.003,
+            "dy": 0.010,
+            "change_significance": cmc_effect_size_df,
+            "annot_color": "#000000",
+            "custom_colors": ['#b3cde3', '#377eb8']}
+
+        df_list.append(ppi_1_low)
+        df_list.append(ppi_1_high)
+
+        add_overlaid_buildup_toax_customlabels(df_list, axywo, **kwargs)
+
+        output_filename_3 = f"{output_directory}/" + "buildup_test_CMC" + ".png"
+        figure2.patch.set_facecolor("white")
+        plt.tight_layout(pad = 1)
+        figure2.savefig(output_filename_3, dpi = 500, transparent = False)

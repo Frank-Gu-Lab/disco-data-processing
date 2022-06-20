@@ -74,6 +74,6 @@ def test_assemble_peak_buildup_df():
     expected_df = expected_df.drop(columns='replicate') # replicate data column doesn't make sense after grouping by mean
     expected_df = expected_df.reset_index()
 
-    actual = assemble_peak_buildup_df(replicate_all, 1)
+    actual = assemble_peak_buildup_df(replicate_all, 1) 
 
     pd.testing.assert_frame_equal(actual, expected_df)

@@ -206,6 +206,8 @@ def add_overlaid_buildup_toax_customlabels(df_list, ax, **kwargs):
 
     # annotate significance of change in disco effect (NOT disco adhesion interaction significance)
     key = group['proton_peak_index'].unique()[0]
+    print(key)
+    print(change_sig_df)
     change_sig_subset = change_sig_df.loc[change_sig_df['proton_peak_index'] == key]
 
     # annotate change sig points
@@ -279,7 +281,7 @@ def add_difference_plot(df, ax, dy, **kwargs):
     # data
     ax.scatter(df['effect_size'], plot_range, s=(40),
                alpha=1, label='Effect Size', marker='o', linewidths=0.35, edgecolors='k', zorder = 2)
-    ax.set_yticks(plot_range, np.round(df['ppm'].values, 2))
+    ax.set_yticks(list(plot_range))
 
     # annotate significance
     df['annotation'] = df['changed_significantly'].map({True: "*", False: ""})

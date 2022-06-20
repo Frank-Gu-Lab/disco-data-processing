@@ -377,8 +377,6 @@ elif choice == "Plot existing data and view plotting options":
                         for polymer in list_of_polymer_names:
                             list_of_polymers_by_weight.append(grab_polymer_weight(polymer))
 
-                        print(list_of_polymers_by_weight)
-
                         possible_weights = []
 
                         for polymer in list_of_polymers_by_weight:
@@ -447,7 +445,6 @@ elif choice == "Plot existing data and view plotting options":
                         st.download_button("Download Zip with Merged Datesets", f, file_name = "merged" + ".zip")
                     with open('../data/output/' + global_output_directory_1 + '.zip', 'rb') as f:
                        st.download_button('Download Zip with Analyzed Data', f, file_name=global_output_directory_1+'.zip')
-
 
     except AttributeError:
         st.warning("You do not have any datafiles to graph!")

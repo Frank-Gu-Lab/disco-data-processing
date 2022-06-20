@@ -230,3 +230,25 @@ class TestDofs:
         df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_helpers/input/get_dofs_one_peak_input.pkl")
 
         assert get_dofs_one_peak(df) == [2, 2, 2, 2, 2, 2, 2]
+
+class TestCleansing:
+
+    def test_DropComplete(self):
+
+        false_string = "I am now complete, perhaps even immortal"
+
+        true_string = "I am not yet ready to battle my demons"
+
+        assert DropComplete(false_string) == False
+
+        assert DropComplete(true_string) == True
+
+    def test_clean_string(self):
+
+        input_string = "()(((()()()))))() )))(A)"
+
+        actual = clean_string(input_string)
+
+        expected = "a"
+
+        assert actual == expected
