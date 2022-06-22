@@ -304,26 +304,28 @@ elif choice == "Plot existing data and view plotting options":
                     for tuple in mean_bindonly_list:
                         if poly_choice == tuple[1]:
                             isBinding += 1
-                            display_frame = tuple[0]
                             add_buildup_toax(tuple[0], axd['A'])
-                            axd['A'].set_ylabel("DISCO Effect")
-                            axd['A'].set_xlabel("Saturation Time (s)")
+                            axd['A'].set_ylabel("DISCO Effect", fontdict = {"fontsize": 7})
+                            axd['A'].set_xlabel("Saturation Time (s)", fontdict = {"fontsize": 7})
                             axd['A'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
                             axd['A'].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
                             axd['A'].xaxis.set_ticks(np.arange(0.25, 2.0, 0.25))
                             axd['A'].tick_params(axis = 'x', labelsize = 6)
                             axd['A'].tick_params(axis = 'y', labelsize = 6)
+                            axd['A'].set_title("Buildup Curve for " + poly_choice, fontdict = {"fontsize": 9})
 
                     for tuple in replicate_bindonly_list:
                         if poly_choice == tuple[1]:
                             isBinding += 1
+                            display_frame = tuple[0]
                             add_fingerprint_toax(tuple[0], axd['B'])
-                            axd['B'].set_ylabel("DISCO AFo")
-                            axd['B'].set_xlabel("1H Chemical Shift (Δ ppm)")
+                            axd['B'].set_ylabel("DISCO AFo", fontdict = {"fontsize": 7})
+                            axd['B'].set_xlabel("1H Chemical Shift (Δ ppm)", fontdict = {"fontsize": 7})
                             axd['B'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
                             axd['B'].yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
                             axd['B'].tick_params(axis = 'x', labelsize = 6)
                             axd['B'].tick_params(axis = 'y', labelsize = 6)
+                            axd["B"].set_title("Fingerprint for " + poly_choice, fontdict = {"fontsize": 9})
 
                     if isBinding >= 2:
 
@@ -356,10 +358,6 @@ elif choice == "Plot existing data and view plotting options":
                                 st.image(curve, use_column_width = True)
 
                         st.warning("No binding detected for this polymer, displaying the buildup curve only.")
-
-                        for tuple in mean_all_list:
-                            if tuple[1] == poly_choice:
-                                display_frame = tuple[0]
 
                         i += 1
 
@@ -416,6 +414,7 @@ elif choice == "Plot existing data and view plotting options":
                                 effect_size_df = generate_disco_effect_mean_diff_df(list_of_replicates_for_diff[0][1][0], list_of_replicates_for_diff[0][0][0])
                                 subset_sattime_df = generate_subset_sattime_df(effect_size_df, 0.25)
 
+
                                 figure, axy = plt.subplots(1, figsize = (16, 5))
 
                                 add_difference_plot_transposed(df = subset_sattime_df, ax = axy, dy = 0.3)
@@ -442,8 +441,27 @@ elif choice == "Plot existing data and view plotting options":
                         st.download_button("Download Zip with Merged Datesets", f, file_name = "merged" + ".zip")
                     with open('../data/output/' + global_output_directory_1 + '.zip', 'rb') as f:
                        st.download_button('Download Zip with Analyzed Data', f, file_name=global_output_directory_1+'.zip')
-                    with st.expander("Open to see AFo Summary for Fingerprint"):
-                        st.table(display_frame)
+
+                    new_disp = None
+
+                    try:
+                        new_disp = display_frame[["concentration", "sat_time", "proton_peak_index", "ppm", "AFo"]]
+
+                        with st.expander("Open to see AFo Summary for Fingerprint"):
+                            st.table(new_disp)
+
+
+                    except KeyError:
+
+                        print(display_frame)
+                        print("Keyerror generated, check for debugging")
+
+                    except TypeError:
+
+                        print("Dataframe likely None due to nonbinding, no action required")
+
+
+
 
     except AttributeError:
         st.warning("You do not have any datafiles to graph!")
