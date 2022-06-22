@@ -325,7 +325,7 @@ elif choice == "Plot existing data and view plotting options":
                             axd['B'].yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
                             axd['B'].tick_params(axis = 'x', labelsize = 6)
                             axd['B'].tick_params(axis = 'y', labelsize = 6)
-                            axd["B"].set_title("DISCO Effect Fingerprint - " + poly_choice, fontdict = {"fontsize": 7})
+                            axd["B"].set_title("DISCO Fingerprint - " + poly_choice, fontdict = {"fontsize": 7})
 
                     if isBinding >= 2:
 
