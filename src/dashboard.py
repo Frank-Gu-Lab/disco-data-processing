@@ -306,26 +306,26 @@ elif choice == "Plot existing data and view plotting options":
                             isBinding += 1
                             add_buildup_toax(tuple[0], axd['A'])
                             axd['A'].set_ylabel("DISCO Effect", fontdict = {"fontsize": 7})
-                            axd['A'].set_xlabel("Saturation Time (s)", fontdict = {"fontsize": 7})
+                            axd['A'].set_xlabel("NMR Saturation Time (s)", fontdict = {"fontsize": 7})
                             axd['A'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
                             axd['A'].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
                             axd['A'].xaxis.set_ticks(np.arange(0.25, 2.0, 0.25))
                             axd['A'].tick_params(axis = 'x', labelsize = 6)
                             axd['A'].tick_params(axis = 'y', labelsize = 6)
-                            axd['A'].set_title("Buildup Curve for " + poly_choice, fontdict = {"fontsize": 9})
+                            axd['A'].set_title("DISCO Effect Buildup Curve - " + poly_choice, fontdict = {"fontsize": 7})
 
                     for tuple in replicate_bindonly_list:
                         if poly_choice == tuple[1]:
                             isBinding += 1
                             display_frame = tuple[0]
                             add_fingerprint_toax(tuple[0], axd['B'])
-                            axd['B'].set_ylabel("DISCO AFo", fontdict = {"fontsize": 7})
+                            axd['B'].set_ylabel("DISCO AFo (Absolute Value)", fontdict = {"fontsize": 7})
                             axd['B'].set_xlabel("1H Chemical Shift (Δ ppm)", fontdict = {"fontsize": 7})
                             axd['B'].axhline(y =0.0, color = "0.8", linestyle = "dashed")
                             axd['B'].yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
                             axd['B'].tick_params(axis = 'x', labelsize = 6)
                             axd['B'].tick_params(axis = 'y', labelsize = 6)
-                            axd["B"].set_title("Fingerprint for " + poly_choice, fontdict = {"fontsize": 9})
+                            axd["B"].set_title("DISCO Effect Fingerprint - " + poly_choice, fontdict = {"fontsize": 7})
 
                     if isBinding >= 2:
 
