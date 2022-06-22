@@ -284,7 +284,6 @@ elif choice == "Plot existing data and view plotting options":
                 i += 1
 
             if i == 2:
-                st.success("Successfully read from plotting data")
 
                 poly_choice = st.sidebar.radio("Please select a polymer to plot.", list_of_polymers)
 
@@ -439,12 +438,14 @@ elif choice == "Plot existing data and view plotting options":
 
                         #Now you just gotta graph em!
 
-                    with st.expander("Open to see AFo Summary for Fingerprint"):
-                        st.table(display_frame)
                     with open(merge_output_directory + ".zip", "rb") as f:
                         st.download_button("Download Zip with Merged Datesets", f, file_name = "merged" + ".zip")
                     with open('../data/output/' + global_output_directory_1 + '.zip', 'rb') as f:
                        st.download_button('Download Zip with Analyzed Data', f, file_name=global_output_directory_1+'.zip')
+                    with st.expander("Open to see AFo Summary for Fingerprint"):
+                        st.table(display_frame)
 
     except AttributeError:
+        st.warning("You do not have any datafiles to graph!")
+    except FileNotFoundError:
         st.warning("You do not have any datafiles to graph!")
