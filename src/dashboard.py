@@ -185,6 +185,7 @@ if choice == "Upload and analyze":
             qual_check = quality_check_df.to_excel(os.path.join(merge_output_directory, "merged_fit_quality_dataset.xlsx"))
 
             proton_summary_df = etl_per_proton(quality_check_df)
+
             prot_sum = proton_summary_df.to_excel(os.path.join(merge_output_directory, "proton_binding_dataset.xlsx"))
 
             sht.make_archive(os.path.abspath(merge_output_directory), "zip", global_output_directory, os.path.abspath(merge_output_directory))
@@ -443,24 +444,18 @@ elif choice == "Plot existing data and view plotting options":
                        st.download_button('Download Zip with Analyzed Data', f, file_name=global_output_directory_1+'.zip')
                        i += 1
 
-                    new_disp = None
+                    if isinstance(display_frame, pd.DataFrame):
 
+                        replicate_summary_df = etl_per_replicate(source_path, destination_path)
+                        quality_check_df = etl_per_sat_time(source_path, destination_path)
+                        proton_summary_df = etl_per_proton(quality_check_df)
 
-                    try:
-                        new_disp = display_frame[["concentration", "sat_time", "proton_peak_index", "ppm", "AFo"]]
+                        new_summary = proton_summary_df.loc[proton_summary_df["polymer_name"] == poly_choice]
 
-                        with st.expander("Open to see AFo Summary for Fingerprint"):
-                            st.table(new_disp)
+                        new_summary = new_summary[["polymer_name", "concentration", "ppm", "AFo"]]
 
-
-                    except KeyError:
-
-                        print(display_frame)
-                        print("Keyerror generated, check for debugging")
-
-                    except TypeError:
-
-                        print("Dataframe likely None due to nonbinding, no action required")
+                        with st.expander("Expand to see AFo by ppm for Fingerprint - "+ poly_choice):
+                            st.table(new_summary)
 
         if i >= 4 and isinstance(display_frame, pd.DataFrame):
 
