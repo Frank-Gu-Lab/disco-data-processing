@@ -132,3 +132,34 @@ def annotate_sig_buildup_points(ax, significance, sat_time, disco_effect, dx, dy
             sat_time[ix]+dx, disco_effect[ix]+dy), c=color)
 
     return
+
+# QUALITY OF FIT CHECKS
+def generate_errorplot(df, ax):
+    '''Creates a proton-wise residual standard error plot for examining the quality of nonlinear regression fit that occured
+    during AF0 calculation originally during disco data processing.
+    Theory:
+    -------
+    RSS = sum((ymodel - yobs)**2)
+    RSE = sqrt((1/n-2)*RSS)
+    Notes:
+    ------
+    Use this plot to visually inspect the RSE per significant peak, to identify any false positive
+    peak binding signals (i.e. high error indicates a poor quality nonlinear regression fit, such as a horizontal line AF0 buildup curve).
+    This error plot should be complemented by a visual inspection of the original nonlinear regression data during disco
+    data processing (outside the scope of this repo).
+    '''
+    # calculate error
+    df['y_model'] = df['alpha']*(1-np.exp(-df['sat_time'] * df['beta']))
+    df['RSS'] = (df['y_model'] - df['yikj'])**2
+    rss = df.groupby(by=['sat_time', 'proton_peak_index']).sum()['RSS'].reset_index()
+    n = df['replicate'].max()
+    df['RSE'] = np.sqrt((1/(n-2))*rss['RSS'])
+
+    # make plot
+    sns.boxplot(data=df, x='ppm', y='RSE', ax=ax)
+    plt.title("Residual Squared Error - {}".format(df['polymer_name'].values[0].replace("_", " ")))
+    ax.invert_xaxis() # replicates NMR spectrum axis
+    plt.xlabel("$^1$H Chemical Shift ($\delta$, ppm)")
+    plt.show()
+
+    return
