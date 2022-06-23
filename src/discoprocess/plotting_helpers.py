@@ -159,7 +159,7 @@ def generate_errorplot(df, ax):
     sns.boxplot(data=df, x='ppm', y='RSE', ax=ax)
     plt.title("Residual Squared Error - {}".format(df['polymer_name'].values[0].replace("_", " ")))
     ax.invert_xaxis() # replicates NMR spectrum axis
-    plt.xlabel("$^1$H Chemical Shift ($\delta$, ppm)")
+    plt.xlabel("1H Chemical Shift (Δ ppm)")
     plt.show()
 
     return

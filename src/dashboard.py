@@ -27,7 +27,7 @@ from discoprocess.data_plot_helpers import tukey_fence
 
 from discoprocess.wrangle_data import generate_disco_effect_mean_diff_df, generate_subset_sattime_df
 from discoprocess.plotting import add_fingerprint_toax, add_buildup_toax, add_difference_plot_transposed, add_overlaid_buildup_toax_customlabels, add_difference_plot
-from discoprocess.plotting_helpers import assemble_peak_buildup_df
+from discoprocess.plotting_helpers import assemble_peak_buildup_df, generate_errorplot
 
 from PIL import Image
 
@@ -441,8 +441,10 @@ elif choice == "Plot existing data and view plotting options":
                         st.download_button("Download Zip with Merged Datesets", f, file_name = "merged" + ".zip")
                     with open('../data/output/' + global_output_directory_1 + '.zip', 'rb') as f:
                        st.download_button('Download Zip with Analyzed Data', f, file_name=global_output_directory_1+'.zip')
+                       i += 1
 
                     new_disp = None
+
 
                     try:
                         new_disp = display_frame[["concentration", "sat_time", "proton_peak_index", "ppm", "AFo"]]
@@ -459,6 +461,24 @@ elif choice == "Plot existing data and view plotting options":
                     except TypeError:
 
                         print("Dataframe likely None due to nonbinding, no action required")
+
+        if i >= 4 and isinstance(display_frame, pd.DataFrame):
+
+            st.success("See below for information about fit quality and RSE")
+
+            finger, axeruwu = plt.subplots(figsize = (6, 6))
+            generate_errorplot(display_frame, axeruwu)
+
+            output_filename_3 = f"{output_directory}/" + poly_choice + "_Finger_RSE" + ".png"
+            finger.patch.set_facecolor("white")
+            plt.tight_layout(pad = 1)
+            finger.savefig(output_filename_3, dpi = 500, transparent = False)
+
+            with st.expander("Click to see RSE for " + poly_choice + " Fingerprint"):
+                st.image(output_filename_3)
+
+
+
 
 
 
