@@ -160,6 +160,5 @@ def generate_errorplot(df, ax):
     plt.title("Residual Squared Error - {}".format(df['polymer_name'].values[0].replace("_", " ")))
     ax.invert_xaxis() # replicates NMR spectrum axis
     plt.xlabel("1H Chemical Shift (Δ ppm)")
-    plt.show()
 
     return

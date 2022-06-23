@@ -477,10 +477,20 @@ elif choice == "Plot existing data and view plotting options":
             with st.expander("Click to see RSE for " + poly_choice + " Fingerprint"):
                 st.image(output_filename_3)
 
+            rse_rep_dir = global_output_directory + "/" + poly_choice + "/plots_" + poly_choice + "/*"
 
+            list_of_replicate_rse = glob.glob(rse_rep_dir)
 
+            image_dir = []
 
+            for image in list_of_replicate_rse:
+                if "mean" in image:
+                    image_dir.append(image)
 
+            with st.expander("Open to see mean curve fit plots"):
+                for image in image_dir:
+                    st.image(image)
+                st.info("All plotting data remains available in the downloads above")
 
 
     except AttributeError:
