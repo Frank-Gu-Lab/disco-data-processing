@@ -155,6 +155,7 @@ def generate_errorplot(df, ax):
     n = df['replicate'].max()
     df['RSE'] = np.sqrt((1/(n-2))*rss['RSS'])
 
+
     # make plot
     sns.boxplot(data=df, x='ppm', y='RSE', ax=ax)
     plt.title("Residual Squared Error - {}".format(df['polymer_name'].values[0].replace("_", " ")))
@@ -162,3 +163,29 @@ def generate_errorplot(df, ax):
     plt.xlabel("1H Chemical Shift (Δ ppm)")
 
     return
+
+def generate_correlation_coefficient(df):
+
+    df['y_model'] = df['alpha']*(1-np.exp(-df['sat_time'] * df['beta']))
+
+    ppm_list = []
+
+    for index, row in df.iterrows():
+        if row['ppm'] not in ppm_list:
+            ppm_list.append(row['ppm'])
+
+    coeff_df = pd.DataFrame(columns = ["Sum of Squares of Residuals", "Total Sum of Squares", "Coefficient of Determination"], index = ppm_list)
+
+    mean_frame = df.groupby(by = ['ppm', 'sat_time']).sum()[['yikj', 'y_model']].reset_index()
+
+    for index, row in coeff_df.iterrows():
+        row["Sum of Squares of Residuals"] = 0
+        row["Total Sum of Squares"] = 0
+        row["Coefficient of Determination"] = 0
+        for index2, row2 in mean_frame.iterrows():
+                if row2['ppm'] == index:
+                    row["Sum of Squares of Residuals"] += (row2['y_model'] - row2['yikj'])**2
+                    row["Total Sum of Squares"] += (row2['yikj'] - mean_frame['yikj'].mean())**2
+        row["Coefficient of Determination"] = 1 - (row["Sum of Squares of Residuals"] / row["Total Sum of Squares"])
+
+    return coeff_df

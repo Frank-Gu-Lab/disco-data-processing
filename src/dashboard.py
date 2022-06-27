@@ -27,7 +27,7 @@ from discoprocess.data_plot_helpers import tukey_fence
 
 from discoprocess.wrangle_data import generate_disco_effect_mean_diff_df, generate_subset_sattime_df
 from discoprocess.plotting import add_fingerprint_toax, add_buildup_toax, add_difference_plot_transposed, add_overlaid_buildup_toax_customlabels, add_difference_plot
-from discoprocess.plotting_helpers import assemble_peak_buildup_df, generate_errorplot
+from discoprocess.plotting_helpers import assemble_peak_buildup_df, generate_errorplot, generate_correlation_coefficient
 
 from PIL import Image
 
@@ -464,13 +464,12 @@ elif choice == "Plot existing data and view plotting options":
             finger, axeruwu = plt.subplots(figsize = (6, 6))
             generate_errorplot(display_frame, axeruwu)
 
+            coeff_df = generate_correlation_coefficient(display_frame)
+
             output_filename_3 = f"{output_directory}/" + poly_choice + "_Finger_RSE" + ".png"
             finger.patch.set_facecolor("white")
             plt.tight_layout(pad = 1)
             finger.savefig(output_filename_3, dpi = 500, transparent = False)
-
-            with st.expander("Click to see RSE for " + poly_choice + " Fingerprint"):
-                st.image(output_filename_3)
 
             rse_rep_dir = global_output_directory + "/" + poly_choice + "/plots_" + poly_choice + "/*"
 
@@ -482,9 +481,12 @@ elif choice == "Plot existing data and view plotting options":
                 if "mean" in image:
                     image_dir.append(image)
 
-            with st.expander("Open to see mean curve fit plots"):
+            with st.expander("Click to see Fit Quality Parameters for " + poly_choice + " Fingerprint"):
+                st.image(output_filename_3)
                 for image in image_dir:
                     st.image(image)
+                st.info("Please see table below for R^2 value by PPM for the non-linear fits above.")
+                st.table(coeff_df)
                 st.info("All plotting data remains available in the downloads above")
 
 
