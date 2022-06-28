@@ -74,6 +74,16 @@ def test_assemble_peak_buildup_df():
     expected_df = expected_df.drop(columns='replicate') # replicate data column doesn't make sense after grouping by mean
     expected_df = expected_df.reset_index()
 
-    actual = assemble_peak_buildup_df(replicate_all, 1) 
+    actual = assemble_peak_buildup_df(replicate_all, 1)
 
     pd.testing.assert_frame_equal(actual, expected_df)
+
+def test_generate_correlation_coefficient():
+
+    input_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_plotting_helpers/input/r_2_input_frame.pkl")
+
+    expected_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_plotting_helpers/output/r_2_output_frame.pkl")
+
+    actual_df = generate_correlation_coefficient(input_df)
+
+    pd.testing.assert_frame_equal(actual_df, expected_df)
