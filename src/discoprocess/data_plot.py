@@ -235,7 +235,7 @@ def generate_buildup_curve(df, polymer_name, output_directory):
         ax.fill_between(sat_time, y1, y2,
                         alpha=0.25)
         ax.legend(loc='best', bbox_to_anchor=(
-            0.6, 0.3, 0.6, 0.6), title="Delta ppm")
+            0.6, 0.3, 0.6, 0.6), title="Δ ppm")
 
     ax.set_title(f'DISCO Effect Buildup Curve - {polymer_name_plot}')
     ax.set_xlabel('NMR Saturation Time (s)')
@@ -320,7 +320,7 @@ def generate_fingerprint(df, polymer_name, output_directory):
 
     # format plot
     ax.set_title(f'Binding Fingerprint \n{polymer_name_plot}')
-    ax.set_xlabel("Peak delta ppm)")
+    ax.set_xlabel("Peak Δ ppm)")
     ax.set_ylabel("DISCO AF_0")
     # ax.set_ylabel("Normalized DISCO $AF_0$")
 
