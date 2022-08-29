@@ -670,69 +670,72 @@ def etl_per_replicate(source_path, destination_path):
 
     # concatenate polymer specific data of each type into cross-polymer tables
     rep_all_df = pd.concat(rep_all)
-    rep_bind_df = pd.concat(rep_bind)
-    mean_bind_df = pd.concat(mean_bind).reset_index()  # make tidy
+    if len(rep_bind) > 0:
+        rep_bind_df = pd.concat(rep_bind)
+        mean_bind_df = pd.concat(mean_bind).reset_index()  # make tidy
 
-    # round away ppm noise
-    rep_all_df['ppm'] = rep_all_df['ppm'].round(2)
-    rep_bind_df['ppm'] = rep_bind_df['ppm'].round(2)
+        # round away ppm noise
+        rep_all_df['ppm'] = rep_all_df['ppm'].round(2)
+        rep_bind_df['ppm'] = rep_bind_df['ppm'].round(2)
 
-    # subset replicates to unique values of interest
-    rep_all_df = rep_all_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "amp_factor"]].drop_duplicates(
-        subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "amp_factor"])
-    rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "AFo", "SSE"]].drop_duplicates(
-        subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "AFo", "SSE"])
-    mean_bind_df = mean_bind_df[["polymer_name", "concentration", "proton_peak_index", "sample_size",
-                                 "SSE_bar", "AFo_bar"]].drop_duplicates().droplevel(1, axis=1)
+        # subset replicates to unique values of interest
+        rep_all_df = rep_all_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "amp_factor"]].drop_duplicates(
+            subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "amp_factor"])
+        rep_bind_df = rep_bind_df[["polymer_name", "concentration", "proton_peak_index", "replicate", "ppm", "AFo", "SSE"]].drop_duplicates(
+            subset=["polymer_name", "concentration", "proton_peak_index", "replicate", "AFo", "SSE"])
+        mean_bind_df = mean_bind_df[["polymer_name", "concentration", "proton_peak_index", "sample_size",
+                                     "SSE_bar", "AFo_bar"]].drop_duplicates().droplevel(1, axis=1)
 
-    # join replicate-specific AFo and SSE, clean noise from ppm
-    midpoint_df = pd.merge(rep_all_df, rep_bind_df, how='left', on=primary_key_rep).drop(
-        columns=['ppm_y']).rename(columns={'ppm_x': 'ppm'})
+        # join replicate-specific AFo and SSE, clean noise from ppm
+        midpoint_df = pd.merge(rep_all_df, rep_bind_df, how='left', on=primary_key_rep).drop(
+            columns=['ppm_y']).rename(columns={'ppm_x': 'ppm'})
 
-    # fill non-binding replicate peaks with zeros
-    midpoint_df[['AFo', 'SSE']] = midpoint_df[['AFo', 'SSE']].fillna(0)
+        # fill non-binding replicate peaks with zeros
+        midpoint_df[['AFo', 'SSE']] = midpoint_df[['AFo', 'SSE']].fillna(0)
 
-    # ensure consistent data types in primary key
-    midpoint_df.polymer_name = midpoint_df.polymer_name.astype(
-        str).str.replace(' ', '')
-    mean_bind_df.polymer_name = mean_bind_df.polymer_name.astype(
-        str).str.replace(' ', '')
-    midpoint_df.concentration = midpoint_df.concentration.astype(float)
-    mean_bind_df.concentration = mean_bind_df.concentration.astype(float)
-    midpoint_df.proton_peak_index = midpoint_df.proton_peak_index.astype(int)
-    mean_bind_df.proton_peak_index = mean_bind_df.proton_peak_index.astype(int)
+        # ensure consistent data types in primary key
+        midpoint_df.polymer_name = midpoint_df.polymer_name.astype(
+            str).str.replace(' ', '')
+        mean_bind_df.polymer_name = mean_bind_df.polymer_name.astype(
+            str).str.replace(' ', '')
+        midpoint_df.concentration = midpoint_df.concentration.astype(float)
+        mean_bind_df.concentration = mean_bind_df.concentration.astype(float)
+        midpoint_df.proton_peak_index = midpoint_df.proton_peak_index.astype(int)
+        mean_bind_df.proton_peak_index = mean_bind_df.proton_peak_index.astype(int)
 
-    # sort values
-    midpoint_df = midpoint_df.sort_values(by=primary_key_mean)
-    mean_bind_df = mean_bind_df.sort_values(by=primary_key_mean)
+        # sort values
+        midpoint_df = midpoint_df.sort_values(by=primary_key_mean)
+        mean_bind_df = mean_bind_df.sort_values(by=primary_key_mean)
 
-    # join AFobar and SSEbar
-    summary_df = pd.merge(midpoint_df, mean_bind_df,
-                          how='left', on=primary_key_mean)
+        # join AFobar and SSEbar
+        summary_df = pd.merge(midpoint_df, mean_bind_df,
+                              how='left', on=primary_key_mean)
 
-    # for non binding, fill with zeros
-    summary_df[['SSE_bar', 'AFo_bar']] = summary_df[['SSE_bar', 'AFo_bar']].fillna(0)
+        # for non binding, fill with zeros
+        summary_df[['SSE_bar', 'AFo_bar']] = summary_df[['SSE_bar', 'AFo_bar']].fillna(0)
 
-    # fill in sample size if have data, if not calculate based on max num replicates
-    sample_size_mapper = summary_df[[
-        'polymer_name', 'concentration', 'sample_size']].drop_duplicates()
-    replicate_mapper = summary_df[[
-        'polymer_name', 'concentration', 'replicate']].drop_duplicates()
+        # fill in sample size if have data, if not calculate based on max num replicates
+        sample_size_mapper = summary_df[[
+            'polymer_name', 'concentration', 'sample_size']].drop_duplicates()
+        replicate_mapper = summary_df[[
+            'polymer_name', 'concentration', 'replicate']].drop_duplicates()
 
-    for row in sample_size_mapper.itertuples():
-        polymer = row[1]
-        conc = row[2]
-        sample_size = row[3]
+        for row in sample_size_mapper.itertuples():
+            polymer = row[1]
+            conc = row[2]
+            sample_size = row[3]
 
-        if pd.isna(sample_size):
-            # grab max num replicates for that polymer and conc
-            max_nrep = replicate_mapper.loc[(replicate_mapper['polymer_name'] == polymer) & (
-                replicate_mapper['concentration'] == conc), ('replicate')].max()
-            summary_df.loc[(summary_df['polymer_name'] == polymer) & (
-                summary_df['concentration'] == conc), ('sample_size')] = max_nrep
+            if pd.isna(sample_size):
+                # grab max num replicates for that polymer and conc
+                max_nrep = replicate_mapper.loc[(replicate_mapper['polymer_name'] == polymer) & (
+                    replicate_mapper['concentration'] == conc), ('replicate')].max()
+                summary_df.loc[(summary_df['polymer_name'] == polymer) & (
+                    summary_df['concentration'] == conc), ('sample_size')] = max_nrep
 
-        else:
-            summary_df.loc[(summary_df['polymer_name'] == polymer) & (
-                summary_df['concentration'] == conc), ('sample_size')] = sample_size
+            else:
+                summary_df.loc[(summary_df['polymer_name'] == polymer) & (
+                    summary_df['concentration'] == conc), ('sample_size')] = sample_size
 
-    return summary_df
+        return summary_df
+    else:
+        print("No binding detected")

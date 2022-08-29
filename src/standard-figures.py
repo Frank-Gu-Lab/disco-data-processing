@@ -28,7 +28,7 @@ polymer_library_replicates = glob.glob("../data/output/merged/stats_analysis_out
 merged_bind_dataset = pd.read_excel("../data/output/merged/merged_binding_dataset.xlsx")
 
 # Define a custom output directory for formal figures
-output_directory = "../data/output/publications"
+output_directory = "../data/output/plots"
 
 if not os.path.exists(output_directory):
     os.makedirs(output_directory)

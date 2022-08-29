@@ -104,13 +104,18 @@ if not os.path.exists(merge_output_directory):
 source_path = '{}/*/tables_*'.format(global_output_directory)
 destination_path = '{}'.format(merge_output_directory)
 
+
 replicate_summary_df = etl_per_replicate(source_path, destination_path)
-replicate_summary_df.to_excel(os.path.join(merge_output_directory, "merged_binding_dataset.xlsx"))
+if replicate_summary_df is not None:
+    replicate_summary_df.to_excel(os.path.join(merge_output_directory, "merged_binding_dataset.xlsx"))
 
-quality_check_df = etl_per_sat_time(source_path, destination_path)
-quality_check_df.to_excel(os.path.join(merge_output_directory, "merged_fit_quality_dataset.xlsx"))
+if replicate_summary_df is not None:
+    quality_check_df = etl_per_sat_time(source_path, destination_path)
+    quality_check_df.to_excel(os.path.join(merge_output_directory, "merged_fit_quality_dataset.xlsx"))
 
-proton_summary_df = etl_per_proton(quality_check_df)
-proton_summary_df.to_excel(os.path.join(merge_output_directory, "proton_binding_dataset.xlsx"))
+    proton_summary_df = etl_per_proton(quality_check_df)
+    proton_summary_df.to_excel(os.path.join(merge_output_directory, "proton_binding_dataset.xlsx"))
+else:
+    print("Proton_summary_df not generated due to no binding detected")
 
 print("Data processing completed! Summary dataset files are available in the output directory under merged.")
