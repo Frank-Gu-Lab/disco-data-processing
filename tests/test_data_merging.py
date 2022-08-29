@@ -9,6 +9,8 @@ import pandas as pd
 # appending path to access sibling directory - uncomment if local package setup doesn't work
 sys.path.append(os.getcwd() + '/../src')
 
+path2 = os.path.dirname(__file__) + "/test-files/test_merge/"
+
 from discoprocess.data_merging import *
 
 # global testing directory
@@ -187,24 +189,24 @@ class TestETL:
 
     def test_etl_per_sat_time(self):
 
-        expected_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/expected_df.pkl")
+        expected_df = pd.read_pickle(path2 + "/expected_df.pkl")
 
-        df = etl_per_sat_time("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_input/tables_*", "C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_output")
+        df = etl_per_sat_time(path2 + "/test_etl_input/tables_*", path2 + "/test_etl_output")
 
         pd.testing.assert_frame_equal(df, expected_df, check_exact=True, check_dtype=False)
 
     def test_etl_per_proton(self):
 
-        expected_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_per_proton_input/expected_df.pkl")
+        expected_df = pd.read_pickle(path2 + "/test_etl_per_proton_input/expected_df.pkl")
 
-        df = etl_per_proton(pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/expected_df.pkl"))
+        df = etl_per_proton(pd.read_pickle(path2 + "/expected_df.pkl"))
 
         pd.testing.assert_frame_equal(df, expected_df, check_exact=True, check_dtype=False)
 
     def test_etl_per_replicate(self):
 
-        expected_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_per_replicate_input/expected_df.pkl")
+        expected_df = pd.read_pickle(path2 + "/test_etl_per_replicate_input/expected_df.pkl")
 
-        df = etl_per_replicate("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_input/tables_*", "C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_merge/test_etl_output")
+        df = etl_per_replicate(path2 + "/test_etl_input/tables_*", path2 + "/test_etl_output")
 
         pd.testing.assert_frame_equal(df, expected_df, check_exact=True, check_dtype=False)

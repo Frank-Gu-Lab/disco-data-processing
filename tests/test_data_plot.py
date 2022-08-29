@@ -14,6 +14,8 @@ from contextlib import contextmanager
 # appending path to access sibling directory - uncomment if local package setup doesn't work
 sys.path.append(os.getcwd() + '/../src')
 
+path2 = os.path.dirname(__file__) + "/test-files/test_data_plot/"
+
 from discoprocess.data_plot import *
 from matplotlib.testing.compare import compare_images
 
@@ -107,7 +109,7 @@ class TestGeneratePlot:
         sat_time = np.array([0.25, 0.5, 0.75, 1., 1.25, 1.5, 1.75])
 
         if path == "mean":
-            y_ikj_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_data_plot/input/gen_plot_mean_input_df.pkl")
+            y_ikj_df = pd.read_pickle(path2 + "input/gen_plot_mean_input_df.pkl")
             print(y_ikj_df)
             param_vals = np.array([-0.03367754, 2.43837912])
             ppm = 1.58145
@@ -116,7 +118,7 @@ class TestGeneratePlot:
             r = None
             expected_curve = expected_path + "/" + "mean_conc_expected.png"
         else:
-            y_ikj_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_data_plot/input/gen_plot_rep_input_df.pkl")
+            y_ikj_df = pd.read_pickle(path2 + "input/gen_plot_rep_input_df.pkl")
             print(y_ikj_df)
             param_vals = np.array([-3.34786840e-02, 9.24356468e+01])
             ppm = 1.58145

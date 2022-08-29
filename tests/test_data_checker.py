@@ -8,6 +8,8 @@ import unittest
 # appending path to access sibling directory - uncomment if local package setup doesn't work
 sys.path.append(os.getcwd() + '/../src')
 
+path = os.path.dirname(__file__) + "/test-files/test_checker/test_checker_input"
+
 from discoprocess.data_checker import *
 
 class TestChecks:
@@ -16,7 +18,9 @@ class TestChecks:
 
         list_of_raw_books = []
 
-        list_of_raw_books.append("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_checker/test_checker_input/Batch-CMC_131k_20uM.xlsx")
+        print(path)
+
+        list_of_raw_books.append(path + "/Batch-CMC_131k_20uM.xlsx")
 
         with pytest.raises(Exception) as e:
             name_checker(list_of_raw_books)
@@ -27,7 +31,7 @@ class TestChecks:
 
                 list_of_raw_books = []
 
-                list_of_raw_books.append("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_checker/test_checker_input/Batch-CMC_90k_20uM.xlsx")
+                list_of_raw_books.append(path + "/Batch-CMC_90k_20uM.xlsx")
 
                 with pytest.raises(Exception) as e:
                     resonance_and_column_checker(list_of_raw_books)
@@ -38,7 +42,7 @@ class TestChecks:
 
         list_of_raw_books = []
 
-        list_of_raw_books.append("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_checker/test_checker_input/Batch-PEG_2k_20uM.xlsx")
+        list_of_raw_books.append(path + "/Batch-PEG_2k_20uM.xlsx")
 
         with pytest.raises(Exception) as e:
             range_checker(list_of_raw_books)

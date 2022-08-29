@@ -7,6 +7,8 @@ import shutil
 # appending path to access sibling directory - uncomment if local package setup doesn't work
 sys.path.append(os.getcwd() + '/../src')
 
+path2 = os.path.dirname(__file__) + "/test-files/test_helpers/"
+
 from discoprocess.data_wrangling_helpers import *
 
 # global testng directories
@@ -227,7 +229,7 @@ class TestDofs:
     #Hey it works now :D
     def test_get_dofs_one_peak(self):
 
-        df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_helpers/input/get_dofs_one_peak_input.pkl")
+        df = pd.read_pickle(path2 + "/input/get_dofs_one_peak_input.pkl")
 
         assert get_dofs_one_peak(df) == [2, 2, 2, 2, 2, 2, 2]
 

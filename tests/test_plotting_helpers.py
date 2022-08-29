@@ -13,6 +13,8 @@ import seaborn as sns
 # appending path to access sibling directory - uncomment if local package setup doesn't work
 sys.path.append(os.getcwd() + '/../src')
 
+path2 = os.path.dirname(__file__) + "/test-files/test_plotting_helpers/"
+
 from discoprocess.plotting_helpers import *
 from matplotlib.testing.compare import compare_images
 
@@ -80,9 +82,9 @@ def test_assemble_peak_buildup_df():
 
 def test_generate_correlation_coefficient():
 
-    input_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_plotting_helpers/input/r_2_input_frame.pkl")
+    input_df = pd.read_pickle(path2 + "input/r_2_input_frame.pkl")
 
-    expected_df = pd.read_pickle("C:/Users/matth/OneDrive/Documents/GitHub/disco-data-processing/tests/test-files/test_plotting_helpers/output/r_2_output_frame.pkl")
+    expected_df = pd.read_pickle(path2 + "output/r_2_output_frame.pkl")
 
     actual_df = generate_correlation_coefficient(input_df)
 
