@@ -108,6 +108,8 @@ def clean_the_batch_tuple_list(list_of_clean_dfs):
             control_mask = current_df['sample_or_control'].str.contains('ontrol')
             current_df.loc[sample_mask, 'sample_or_control'] = 'sample'
             current_df.loc[control_mask, 'sample_or_control'] = 'control'
+            sample_mask_2 = current_df['sample_or_control'].str.contains("Sample")
+            current_df.loc[sample_mask_2, "sample_or_control"] = "sample"
 
             # change irrad bool On/Off flags to True and False if not already a bool list
             if type(current_df['irrad_bool'].iloc[0]) != bool:
