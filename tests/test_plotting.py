@@ -31,7 +31,7 @@ from matplotlib.testing.compare import compare_images
 path = os.path.dirname(__file__) + "/test-files/test_plotting"
 input_path = path + "/input"
 expected_path = path + "/expected"
-output_directory = path + "/output"
+output_directory = path + "/expected"
 
 #high mw CMC
 high_cmc_mean_all = pd.read_excel(input_path + "/stats_analysis_output_mean_all_CMC_131k_20uM.xlsx", index_col=[0, 1, 2, 3], header=[0, 1]).reset_index()
