@@ -7,3 +7,6 @@ pytest-mock
 pytest-cov
 openpyxl
 SciencePlots #1.0.9
+scikit-learn
+pingouin
+pymongo[srv]
