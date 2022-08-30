@@ -84,8 +84,9 @@ def test_generate_correlation_coefficient():
 
     input_df = pd.read_pickle(path2 + "input/r_2_input_frame.pkl")
 
-    expected_df = pd.read_pickle(path2 + "output/r_2_output_frame.pkl")
+    expected_df = pd.read_pickle(path2 + "input/r_2_output_frame.pkl")
 
     actual_df = generate_correlation_coefficient(input_df)
+
 
     pd.testing.assert_frame_equal(actual_df, expected_df)
