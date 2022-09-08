@@ -1,21 +1,11 @@
-# !/usr/bin/env python
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""
+Created on Thursday April 27 11:49 2021
 
-# Disco Data Processing Script
-# Prior to running the script, please ensure you have inserted all the books you would like to be analyzed inside the input directory. The code will create custom output folders based on the name of the input books, so nothing overwrites. This code supports polymer data from the NMR analysis in "Book Format" (See PAA.xlsx for example) and "Batch Format" (See Batch 1, Batch 2 files for an example of what this looks like).
+@author: Samantha Stuart
 
-# For Batch Format inputs, please ensure unique observations intended to be analyzed together follow the same naming format. For example, if there are 4 total CMC results, 3 from one day to be analyzed together, and 1 from a separate occasion, the sheet tabs should be named according to one format: CMC (1), CMC (2), CMC (3) {These 3 will be analyzed together. The 4th CMC tab should be named something different, such as CMC_other, and will be treated separately.
-
-# Your Directory Should Look Like:
-# - src/disco-data-processing.py
-# - src/data_wrangling_functions.py
-# - src/data_merging.py
-# - data/input/"raw_book_with_a_short_title_you_like.xlsx" (i.e. "PAA.xlsx")
-
-# Then simply run this .py script.
-# Part 1 : Reading and Cleaning Data  - prepare the data for statistical analysis
-# Part 2 : Statistical Analysis - classify true positive binding proton observations, generate AFo plots
-# Part 3 : Merge true positive and true negative observations into clean dataset for future machine learning
+Core disco data processing executable that governs global code operation.
+"""
 
 # importing required libraries:
 import pandas as pd
