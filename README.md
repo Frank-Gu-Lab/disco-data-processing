@@ -1,4 +1,5 @@
-# disco-data-processing
+# DISCO Data Processing Code 🕺⚙️
+
 This repository contains the code by the Frank Gu Lab for DISCO-NMR data processing. 
 
 <a>![](https://media.tenor.com/images/dedb6f501250b912f125112d6a04a26e/tenor.gif)</a>
@@ -6,7 +7,7 @@ This repository contains the code by the Frank Gu Lab for DISCO-NMR data process
 This code transforms integral tables describing individual DISCO-NMR runs into
 proton-level summaries of interactive behaivour.
  
-To build intuition for the steps underlying DISCO Data Processing in this repository, [we provide a teaching tutorial Colab notebook, linked here.](https://drive.google.com/file/d/1wESRp60sst9mNYsffK9DtpeZ5yPB-ff7/view?usp=sharing).
+To build intuition for the steps underlying DISCO Data Processing in this repository, [we provide a teaching tutorial Colab notebook, linked here.](https://colab.research.google.com/drive/1wESRp60sst9mNYsffK9DtpeZ5yPB-ff7)
 
 ## Script Mode Data Processing vs Graphical User Interface
 We also have a graphical user interface version of the repository to simplify use, [available at this link](https://frank-gu-lab-disco-deployment-test-srcmatd-kuxo11.streamlitapp.com/).
