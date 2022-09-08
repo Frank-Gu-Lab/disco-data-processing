@@ -3,80 +3,109 @@ This repository contains the code by the Frank Gu Lab for DISCO-NMR data process
 
 <a>![](https://media.tenor.com/images/dedb6f501250b912f125112d6a04a26e/tenor.gif)</a>
 
-This code transforms outputs from individual DISCO NMR experiments in MestreNova into a statistically validated, clean Pandas DataFrame of true positive and true negative polymer-proton binding observations for further use in machine learning. The purpose of this repository is to create a centralized location for lab members to: develop code for DISCO-NMR data processing, request additional features for the code, track bugs, and provide version control.
-
-If you have a feature you would like to request, or have observed a bug in the code, please submit your comments through an "Issue" under the Issues tab.  
-
-<h3> <b> Data Process Description </b> </h3>
-
-- Part 1 : Reading and Cleaning Data      (reads and prepares data for statistical analysis)
-- Part 2 : Statistical Analysis           (classifies true positive binding proton observations, generates AFo plots, writes outputs to file)
-- Part 3 : Generate DataFrame + Export to Excel     (merges true positive and true negative observations classified from Part 2 into ML-ready dataset)
-
-<b>[Read the Pseudocode + Stats Description for Part 1 and Part 2 Here](https://utoronto.sharepoint.com/:b:/r/sites/fase-che-fgl-nano/DISCOML/Shared%20Documents/Filesharing/disco-data-processing-pseudocode.pdf?csf=1&web=1&e=Ye55Bj)</b>
-
+This code transforms integral tables describing individual DISCO-NMR runs into
+proton-level summaries of interactive behaivour.
  
-<h3><b> Run Setup </b></h3>
+To build intuition for the steps underlying DISCO Data Processing in this repository, [we provide a teaching tutorial Colab notebook, linked here.](https://drive.google.com/file/d/1wESRp60sst9mNYsffK9DtpeZ5yPB-ff7/view?usp=sharing).
 
-<b>Your Directory Should Look Like:  </b>    
-- src/disco-data-processing.py <b> (main program) </b>
-- src/discoprocess <b> (package) </b>
-- src/setup.py <b> (package creator) </b>
-- src/requirements.txt <b> (environment setup) </b>
-- data/input/"raw_book_with_a_short_title_you_like.xlsx" (i.e. "PAA.xlsx")
+## Script Mode Data Processing vs Graphical User Interface
+We also have a graphical user interface version of the repository to simplify use, [available at this link](https://frank-gu-lab-disco-deployment-test-srcmatd-kuxo11.streamlitapp.com/).
 
-<b> Modules inside discoprocess include: </b>
-- \_\_init__.py <b> (package identifier) </b>
-- data_wrangling_functions.py
-- data_merging.py
-- data_analyze.py
-- data_plot.py
-- data_wrangling_helpers.py
+However, if you prefer to run the code locally to scale analysis beyond 7 inputs, and additionally ouput all interim data tables, the present repository provides a comprehensive "script mode" implementation. 
 
-The other files in this hub are just exemplary outputs based on the inputs in the input folder.
+Additionally, data table outputs from running this repository in script mode are directly compatible with the Disco Figures publication plotting template. If you are working on publishing DISCO-NMR results and wish to use the template, conducting your data processing in this repository enables compatibility.
 
-Prior to running the script, please ensure you have all the required dependencies by navigating to the src directory and run ```pip install -r requirements.txt```. This repository also uses a custom package, discoprocess, which can be installed on your local computer/environment by running ```python setup.py install``` in the src directory, which can then be imported from any directory. This will install all the necessary packages to run this repository. Note that by installing discoprocess, any changes in the source code will not be reflected unless the package is uninstalled and reinstalled.
+Both the GUI and the present repository are built from identical underlying data processing scripts.
 
-Insert all the books you would like to be analyzed inside the input directory. The code will create custom output folders per polymer experiment based on the name of the input books, so nothing overwrites. This code supports: 
+------
+## Project Organization
+    ├── LICENSE
+    ├── README.md      <- The top-level README for this project.
+    ├── data
+    │   ├── input      <- Place Excel books of integral table data here
+    │   └── output     <- The code will auto-generate output folders for each input
+    │
+    ├── docs/source/src_modules  <- Sphinx documentation files
+    ├── src  <- source code
+    │   ├── discoprocess <- contains helper functions for data processing
+    │   ├── disco-data-processing.py <- Key global data processing executable
+    │   ├── standard-figures.py <- Auto-generate buildup curve and fingerprint plots
+    │   ├── custom-figures.py   <- Auto-genreated figure customization scripts
+    │   ├── dashboard.py        <- Obsolete, preliminary dashboard code
+    │   ├── requirements.txt  <- Pip version of requirements for the analysis environment
+    │   └── environment.yml   <- Conda version of requirements for the analysis environment
+    ├── tests  <- Unit test implementation in Pytest 
+    └── docs/source/src_modules  <- Sphinx documentation files
+       
+--------
+## Running the code locally in script mode
+### 1. Clone or download this GitHub repository:
+Do one of the following:
 
-- "Book" formatted experimental data (See PAA.xlsx in the input folder for example - one polymer per excel book) 
-- "Batch" formatted experimental data (See (Batch 1), (Batch 2) files in the input folder - many polymers per excel book). 
+* Clone this repository to a directory of your choice on your computer using the command line or GitHub Desktop.
 
-<h3><b> Special Input Data Formatting Requirements </b></h3>
-For Batch Format inputs, please ensure unique polymer replicates intended to be analyzed together follow the same naming format. 
-For example, if there are 4 total CMC replicates, 3 from one experiment to be analyzed together, and 1 from a separate experiment that is NOT intended as 
-a replicate of the other three, the sheet tabs should be named as follows: 
+* Download the ZIP file of archive of the repository, move and extract it in the directory of your choice on your computer.
 
-- CMC (1), CMC (2), CMC (3)               (These 3 will be analyzed together, as their name string is the same, and all have a space and brackets as delimeters.)
-- CMC_other                               (The 4th CMC tab will be treated separately, as it is named with either a different string or delimeter (both in this case)
+### 2. Install dependencies using Anaconda or Pip
+### Instructions for installing dependencies via Anaconda:
+1. Download and install [Anaconda](https://conda.io/docs/index.html)
 
-<h3><b> Running the Code </b></h3>   
-Simply run the disco-data-processing.py file after preparing the input as described above on your local machine.
+1. Navigate to the project directory
 
-    python disco-data-processing.py
+1. Open Anaconda prompt in this directory (or Terminal)
 
-<h3><b> Results </b></h3>
-The ultimate merged dataset will be available ("merged_binding_dataset.xlsx") as an Excel file in output/merged. 
+1. Run the following commend from Anaconda prompt (or Terminal) to automatically create an environment from the requirements.txt file: `$ conda create --name infrno --file requirements.txt`
+
+1. Run the following command to activate the environment: `conda activate infrno` 
+
+1. You are now ready to open and run files in the repository in a code editor of your choice that runs your virtual environment [(ex: VSCode)](https://code.visualstudio.com/download)
+
+For detailed information about creating, managing, and working with Conda environments, please see the [corresponding help page](https://conda.io/docs/user-guide/tasks/manage-environments.html). 
+
+### Instructions for installing dependencies with pip
+
+If you prefer to manage your packages using pip, navigate in Terminal to the project directory and run the command below to install the preqrequisite packages into your virtual environment:
+
+```
+$ pip install -r requirements.txt
+```
+
+With either install option, you may need to create an additional Jupyter Notebook kernel containing your virtual environment, if it does not automatically appear. [See this guide for more information.](https://towardsdatascience.com/get-your-conda-environment-to-show-in-jupyter-notebooks-the-easy-way-17010b76e874)
+
+--------
+## Running the data processing code
+1. Place Excel books of integral tables in the `data/input` folder (Example HPC 370kDa in folder to Quickstart first run of code)
+1. Navigate in Terminal to `src` directory
+1. Type command `python disco-data-processing.py` to execute script
+1. Outputs will be generated automatically in `data/output`. If it is your first time running the script, the output directory will be automatically generated.
+
+## Expected Output
+
+### Per Book Outputs
+<img src="readme_images/per-book-output.png" width="100%" height="100%">
+
+* output from `disco-data-processing.py` executable
+
+
+### Merged Datasets: Proton Binding, Quality Check
+<img src="readme_images/merged-dataset.png" width="100%" height="100%">
+
+* output from `disco-data-processing.py` executable
+
+### Standard Figures
+<img src="readme_images/plot-output.png" width="100%" height="100%">
+
+* output from `standard-figures.py` executable
 
 ## Unit Tests
-<h3><b> Running Pytest </b></h3>
-If discoprocess is installed on your local computer/environment, pytest can be run from tests or from its parent directory (so long as tests can be found in a recursive search).
 
-To run all tests:
+Currently, 100% of unit tests pass (on Windows machine).
 
-    python pytest
+To run unit tests, navigate to the `tests` directory, and run the command `pytest` in Terminal.
 
- To run a specific module:
- 
-    python pytest <<module.py>>
-   
-To run a specific class/function (substring matching, regex):
- 
-    python pytest -k "class_name or function_name"
-   
-<h3><b> Running Doctest </b></h3>
-Doctests are written within the function docstring itself. The modules in the repository that contain doctests include make_dataset.py, crossval.py, build_features.py, and split.py. To run the doctests of a specific module:
+## Excel Input Data Formatting Requirements
+Please format one experiment, and all its technical replicates, as one Excel Book.
 
-    python <<module_name>>.py
+Within a book, each tab corresponds to the integral tables of a technical replicate. The exemplary book for HPC 370kDa is provided in the input folder as a template for format requirements. 
 
-If nothing is printed to the terminal, the tests all passed successfully.
+## To Do: Add Guidance on MestreNova Pre-processing and Input Book Formatting
