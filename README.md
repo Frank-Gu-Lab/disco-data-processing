@@ -55,9 +55,9 @@ Do one of the following:
 
 1. Open Anaconda prompt in this directory (or Terminal)
 
-1. Run the following commend from Anaconda prompt (or Terminal) to automatically create an environment from the requirements.txt file: `$ conda create --name infrno --file requirements.txt`
+1. Run the following commend from Anaconda prompt (or Terminal) to automatically create an environment from the requirements.txt file: `$ conda create --name <env-name> --file requirements.txt`
 
-1. Run the following command to activate the environment: `conda activate infrno` 
+1. Run the following command to activate the environment: `conda activate env-name` (where env-name is the name entered between brackets above) 
 
 1. You are now ready to open and run files in the repository in a code editor of your choice that runs your virtual environment [(ex: VSCode)](https://code.visualstudio.com/download)
 
