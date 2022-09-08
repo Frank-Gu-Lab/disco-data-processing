@@ -12,4 +12,7 @@ build/
 discoprocess.egg-info/
 dist/
 draft_plotting.ipynb
-data/*
+input/data/done
+input/data/library_wip
+input/data/misc
+input/data/troubleshooting
