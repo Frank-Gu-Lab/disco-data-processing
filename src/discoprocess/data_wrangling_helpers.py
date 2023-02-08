@@ -140,7 +140,10 @@ def grab_conc(polymer_name):
     polymer_name = polymer_name.split(' ', -1)[0] # remove the (#) replicate number from polymer name
     polymer_name = clean_string(polymer_name)
     substrings = polymer_name.split('_', -1) # grab the conc substring
-    conc = int(substrings[-1][:-2]) # without the uM chars
+    if substrings[-1].__contains__('.'):
+        conc = float(substrings[-1][:-2]) #handling decimal concentrations
+    else:
+        conc = int(substrings[-1][:-2]) # without the uM chars
 
     return conc
 
