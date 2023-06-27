@@ -93,10 +93,12 @@ def generate_ppm_plot(current_df_attenuation, output_directory_exploratory, curr
 
     a4_dims = (11.7, 8.27)
     fig2, ax2 = plt.subplots(figsize = a4_dims)
-    sns.scatterplot(ax = ax2, x = 'sat_time', y = 'corr_%_attenuation', data = current_df_attenuation, hue ='ppm', palette = 'viridis', y_jitter = True, legend = 'brief')
+    #this is broken in mpl v>3.5.2 as jitterbool is depreciated
+    #sns.scatterplot(ax = ax2, x = 'sat_time', y = 'corr_%_attenuation', data = current_df_attenuation, hue ='ppm', palette = 'viridis', y_jitter = True, legend = 'brief')
 
     # a stripplot looks nicer than this, but its legend is unneccessarily long with each individual ppm, need to use rounded ppm to use the below line
-    # sns.stripplot(ax = ax2, x = 'sat_time', y = 'corr_%_attenuation', data = corr_p_attenuation_df, hue ='ppm', palette = 'viridis', dodge = True)
+    current_df_attenuation['ppm'] = np.round(current_df_attenuation['ppm'],2)
+    sns.stripplot(ax = ax2, x = 'sat_time', y = 'corr_%_attenuation', data = current_df_attenuation, hue ='ppm', palette = 'viridis', dodge = True)
 
     plt.title("Polymer Sample Attenuation vs Saturation Time")
     plt.ylabel("Corrected Signal Intensity Attenuation  (%) by ppm")
